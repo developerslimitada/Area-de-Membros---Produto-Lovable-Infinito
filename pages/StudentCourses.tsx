@@ -967,23 +967,8 @@ const StudentCourses: React.FC = () => {
                         <p className="text-slate-300 leading-relaxed text-lg md:text-xl font-medium">{currentLesson.description}</p>
                       </div>
 
-                      {/* Discussion Area */}
-                      <div className="space-y-4 md:space-y-6 pt-8 md:pt-10 border-t border-white/5">
-                        <h3 className="text-lg md:text-xl font-black">Comentários e Dúvidas</h3>
-                        <div className="bg-white/5 p-5 md:p-8 rounded-2xl md:rounded-3xl border border-white/5">
-                          <textarea
-                            placeholder="Deixe seu comentário ou dúvida sobre esta aula..."
-                            className="w-full bg-black/40 border border-white/10 rounded-xl md:rounded-2xl p-4 md:p-6 text-sm outline-none focus:border-red-600/50 transition-all resize-none mb-4"
-                            rows={3}
-                            aria-label="Escrever comentário"
-                          />
-                          <div className="flex justify-end">
-                            <button className="bg-red-600 text-white px-6 md:px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500 transition-all active:scale-95">
-                              Enviar Comentário
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+
+                      {/* Comentários removidos - alunos não podem comentar nas aulas */}
                     </div>
 
                     <div className="space-y-6 md:space-y-8">
