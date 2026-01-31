@@ -127,7 +127,8 @@ function AppContent() {
                   <AdminLayout />
                 </ProtectedRoute>
               }>
-                <Route index element={<Navigate to="courses" replace />} />
+                <Route index element={<AdminDashboard />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="courses" element={<AdminCourses />} />
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="modules" element={<AdminModules />} />
