@@ -33,6 +33,39 @@ export type Database = {
                 }
                 Relationships: []
             }
+            changelog: {
+                Row: {
+                    id: string
+                    version: string
+                    release_date: string
+                    title: string
+                    description: string | null
+                    changes: Json
+                    created_at: string | null
+                    updated_at: string | null
+                }
+                Insert: {
+                    id?: string
+                    version: string
+                    release_date: string
+                    title: string
+                    description?: string | null
+                    changes: Json
+                    created_at?: string | null
+                    updated_at?: string | null
+                }
+                Update: {
+                    id?: string
+                    version?: string
+                    release_date?: string
+                    title?: string
+                    description?: string | null
+                    changes?: Json
+                    created_at?: string | null
+                    updated_at?: string | null
+                }
+                Relationships: []
+            }
             comments: {
                 Row: {
                     content: string
@@ -323,6 +356,7 @@ export type Database = {
                     avatar: string | null
                     bio: string | null
                     created_at: string | null
+                    device_type: string | null
                     email: string
                     id: string
                     name: string
@@ -334,6 +368,7 @@ export type Database = {
                     avatar?: string | null
                     bio?: string | null
                     created_at?: string | null
+                    device_type?: string | null
                     email: string
                     id: string
                     name: string
@@ -345,6 +380,7 @@ export type Database = {
                     avatar?: string | null
                     bio?: string | null
                     created_at?: string | null
+                    device_type?: string | null
                     email?: string
                     id?: string
                     name?: string

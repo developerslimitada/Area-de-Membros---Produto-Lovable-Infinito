@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { BookOpen, ChevronLeft, ChevronRight, Layers, LogOut, PlayCircle, Users, ExternalLink, Zap, ShoppingBag, Grid, Eye, MessageCircle, Video } from 'lucide-react';
-import { logout } from '../../../supabaseStore';
+import { BookOpen, ChevronLeft, ChevronRight, Layers, LogOut, PlayCircle, Users, ExternalLink, Zap, ShoppingBag, Grid, Eye, MessageCircle, Video, History } from 'lucide-react';
+import { logout } from '../../supabaseStore';
 
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -20,6 +20,7 @@ const AdminLayout: React.FC = () => {
     { label: 'Usuários', path: '/admin/users', icon: Users },
     { label: 'Suporte', path: '/admin/support', icon: MessageCircle },
     { label: 'Vídeos Login (VSL)', path: '/admin/vsl', icon: Video },
+    { label: 'Histórico de Atualizações', path: '/admin/changelog', icon: History },
   ];
 
   const location = useLocation();

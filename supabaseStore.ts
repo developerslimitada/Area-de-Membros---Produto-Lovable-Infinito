@@ -6,8 +6,8 @@
  * while persisting all data to Supabase.
  */
 
-import { supabase } from './Area-de-Membros---Produto-Lovable-Infinito/lib/supabase';
-import * as DBTypes from './Area-de-Membros---Produto-Lovable-Infinito/lib/database.types';
+import { supabase } from './lib/supabase';
+import * as DBTypes from './lib/database.types';
 import {
     UserRole,
     User,

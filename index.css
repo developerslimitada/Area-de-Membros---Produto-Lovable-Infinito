@@ -1,0 +1,141 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   MOBILE PWA OPTIMIZATIONS - iPhone 13
+   ======================================== */
+
+/* Safe Areas para iPhone (Notch e Home Indicator) */
+.safe-top {
+    padding-top: env(safe-area-inset-top);
+}
+
+.safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-left {
+    padding-left: env(safe-area-inset-left);
+}
+
+.safe-right {
+    padding-right: env(safe-area-inset-right);
+}
+
+.pb-safe {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+
+.pt-safe {
+    padding-top: calc(1rem + env(safe-area-inset-top));
+}
+
+/* Touch Targets Mínimos (Apple Guidelines: 44x44px) */
+.touch-target {
+    min-width: 44px;
+    min-height: 44px;
+}
+
+/* Bordas Arredondadas Padrão Mobile */
+.card-mobile {
+    border-radius: 1.5rem;
+    /* 24px - rounded-3xl */
+}
+
+.button-mobile {
+    border-radius: 1rem;
+    /* 16px - rounded-2xl */
+    min-height: 44px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Hide Scrollbar mas manter funcionalidade */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Tap Highlight Color */
+* {
+    -webkit-tap-highlight-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Prevent Text Selection em Botões */
+button,
+a {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* ========================================
+   PLATFORM BRANDING REMOVAL
+   ======================================== */
+
+/* Platform branding removal - using generic selectors */
+a[href*="lovable"],
+a[href*="ai.studio"],
+a[href*="lovable.dev"],
+iframe[src*="lovable"],
+iframe[src*="ai.studio"],
+div[class*="badge"],
+div[class*="watermark"],
+div[class*="branding"],
+div[style*="Edit with"],
+div[style*="Made with"],
+div[style*="Built with"],
+div[style*="Powered by"],
+.external-link-badge,
+.platform-badge,
+.builder-badge,
+.branding-link,
+.attribution-link {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    left: -9999px !important;
+    top: -9999px !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+    z-index: -9999 !important;
+}
+
+/* Additional cleanup for dynamically injected elements */
+body>a[target="_blank"]:not([class]),
+body>div:not([id]):not([class])>a[target="_blank"] {
+    display: none !important;
+}
+
+/* Remove fixed position badges */
+div[style*="position: fixed"][style*="bottom"],
+div[style*="position: fixed"][style*="right"],
+a[style*="position: fixed"][style*="bottom"],
+a[style*="position: fixed"][style*="right"] {
+    display: none !important;
+}

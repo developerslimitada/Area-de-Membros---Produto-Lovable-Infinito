@@ -21,13 +21,13 @@ const StudentNavbar = () => {
 
     return (
         <nav className={`
-            flex items-center justify-center w-full px-6 py-4 
-            bg-[#1a1a1a] border-t border-white/10 
+            flex items-center justify-center w-full px-4 py-3 pb-safe
+            bg-[#1a1a1a]/95 backdrop-blur-xl border-t border-white/10 
             text-slate-200 fixed bottom-0 z-50 transition-all duration-300
+            min-h-[70px] safe-bottom
         `}>
 
-
-            <div className="flex items-center gap-2 md:gap-6 overflow-x-auto no-scrollbar">
+            <div className="flex items-center justify-around w-full max-w-md gap-1">
                 {links.map((link) => {
                     const active = isActive(link.path);
                     return (
@@ -35,12 +35,17 @@ const StudentNavbar = () => {
                             key={link.path}
                             to={link.path}
                             className={`
-                                text-sm font-medium transition-all px-3 py-2 rounded-lg flex items-center gap-2
-                                ${active ? 'text-white bg-white/10 shadow-[0_0_10px_rgba(255,255,255,0.1)]' : 'text-slate-400 hover:text-white hover:bg-white/5'}
+                                flex flex-col items-center justify-center gap-1.5 
+                                min-w-[70px] min-h-[56px] px-4 py-3 rounded-3xl
+                                transition-all duration-300 active:scale-95
+                                ${active
+                                    ? 'text-white bg-red-600/20 shadow-[0_0_20px_rgba(239,68,68,0.3)] border border-red-600/30'
+                                    : 'text-slate-400 hover:text-white hover:bg-white/5 active:bg-white/10'
+                                }
                             `}
                         >
-                            <link.icon size={16} />
-                            <span className="hidden md:inline">{link.label}</span>
+                            <link.icon size={24} strokeWidth={2.5} className={active ? 'text-red-500' : ''} />
+                            <span className="text-[10px] font-bold uppercase tracking-wider">{link.label}</span>
                         </Link>
                     )
                 })}

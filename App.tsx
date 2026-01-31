@@ -1,40 +1,47 @@
 
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
 import { getLoggedUser, initializeStore } from './supabaseStore';
 
-// Components
-import SidebarFooter from './Area-de-Membros---Produto-Lovable-Infinito/components/SidebarFooter'; // Keeping for reference if needed, but unused
-import PreviewModeHeader from './Area-de-Membros---Produto-Lovable-Infinito/components/PreviewModeHeader';
-import ProtectedRoute from './Area-de-Membros---Produto-Lovable-Infinito/components/ProtectedRoute';
-import StudentNavbar from './Area-de-Membros---Produto-Lovable-Infinito/components/StudentNavbar';
+// Components (mantém imports diretos para componentes pequenos)
+import SidebarFooter from './components/SidebarFooter';
+import PreviewModeHeader from './components/PreviewModeHeader';
+import ProtectedRoute from './components/ProtectedRoute';
+import StudentNavbar from './components/StudentNavbar';
 
+// Lazy Loading de Páginas para Performance
+const Login = lazy(() => import('./pages/Login'));
+const StudentCourses = lazy(() => import('./pages/StudentCourses'));
+const StudentProfile = lazy(() => import('./pages/StudentProfile'));
+const StudentFeed = lazy(() => import('./pages/StudentFeed'));
+const StudentCommunity = lazy(() => import('./pages/StudentCommunity'));
+const AdminCourses = lazy(() => import('./pages/AdminCourses'));
+const AdminCategories = lazy(() => import('./pages/AdminCategories'));
+const AdminModules = lazy(() => import('./pages/AdminModules'));
+const AdminLessons = lazy(() => import('./pages/AdminLessons'));
+const AdminOffers = lazy(() => import('./pages/AdminOffers'));
+const AdminCourseSidebarOffers = lazy(() => import('./pages/AdminCourseSidebarOffers'));
+const AdminUsers = lazy(() => import('./pages/AdminUsers'));
+const AdminFeed = lazy(() => import('./pages/AdminFeed'));
+const AdminSupport = lazy(() => import('./pages/AdminSupport'));
+const AdminVSL = lazy(() => import('./pages/AdminVSL'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminChangelog = lazy(() => import('./pages/AdminChangelog'));
 
-// Pages
-import Login from './Area-de-Membros---Produto-Lovable-Infinito/pages/Login';
-import StudentDashboard from './Area-de-Membros---Produto-Lovable-Infinito/pages/StudentDashboard';
-import StudentCourses from './Area-de-Membros---Produto-Lovable-Infinito/pages/StudentCourses';
-import StudentProgress from './Area-de-Membros---Produto-Lovable-Infinito/pages/StudentProgress';
-import StudentCertificates from './Area-de-Membros---Produto-Lovable-Infinito/pages/StudentCertificates';
-import StudentProfile from './Area-de-Membros---Produto-Lovable-Infinito/pages/StudentProfile';
-import StudentFeed from './Area-de-Membros---Produto-Lovable-Infinito/pages/StudentFeed';
-import StudentCommunity from './Area-de-Membros---Produto-Lovable-Infinito/pages/StudentCommunity';
-import AdminPanel from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminPanel';
-import AdminCourses from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminCourses';
-import AdminCategories from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminCategories';
-import AdminModules from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminModules';
-import AdminLessons from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminLessons';
-import AdminOffers from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminOffers';
-import AdminUsers from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminUsers';
-import AdminFeed from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminFeed';
-import AdminCourseOffers from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminCourseOffers';
-import AdminSupport from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminSupport';
-import AdminVSL from './Area-de-Membros---Produto-Lovable-Infinito/pages/AdminVSL';
+// Layouts (mantém imports diretos)
+import AdminLayout from './components/layouts/AdminLayout';
+import StudentLayout from './components/layouts/StudentLayout';
 
-// Layouts
-import AdminLayout from './Area-de-Membros---Produto-Lovable-Infinito/components/layouts/AdminLayout';
-import StudentLayout from './Area-de-Membros---Produto-Lovable-Infinito/components/layouts/StudentLayout';
+// Loading Fallback Component
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-screen bg-[#050507]">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+      <p className="text-xs font-black text-slate-600 uppercase tracking-widest animate-pulse">Carregando...</p>
+    </div>
+  </div>
+);
 
 function AppContent() {
   const location = useLocation();
@@ -90,7 +97,7 @@ function AppContent() {
 
       <div style={mainStyle}>
         <div style={{ flex: 1 }}>
-          <AnimatePresence mode="wait">
+          <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/login" element={<Login onLogin={() => setUser(getLoggedUser())} />} />
 
@@ -108,12 +115,9 @@ function AppContent() {
                 </ProtectedRoute>
               }>
                 <Route index element={<Navigate to="courses" replace />} />
-                {/* <Route path="dashboard" element={<StudentDashboard />} /> - Removed as requested */}
                 <Route path="courses" element={<StudentCourses />} />
                 <Route path="feed" element={<StudentFeed />} />
                 <Route path="community" element={<StudentCommunity />} />
-                <Route path="progress" element={<StudentProgress />} />
-                <Route path="certificates" element={<StudentCertificates />} />
                 <Route path="profile" element={<StudentProfile />} />
               </Route>
 
@@ -123,32 +127,30 @@ function AppContent() {
                   <AdminLayout />
                 </ProtectedRoute>
               }>
-                <Route index element={<AdminPanel />} />
+                <Route index element={<Navigate to="courses" replace />} />
                 <Route path="courses" element={<AdminCourses />} />
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="modules" element={<AdminModules />} />
                 <Route path="lessons" element={<AdminLessons />} />
                 <Route path="offers" element={<AdminOffers />} />
+                <Route path="course-offers" element={<AdminCourseSidebarOffers />} />
                 <Route path="users" element={<AdminUsers />} />
                 <Route path="feed" element={<AdminFeed />} />
-                <Route path="course-offers" element={<AdminCourseOffers />} />
                 <Route path="support" element={<AdminSupport />} />
                 <Route path="vsl" element={<AdminVSL />} />
+                <Route path="changelog" element={<AdminChangelog />} />
 
                 {/* Admin Preview Routes */}
-                {/* <Route path="preview/student/dashboard" element={<StudentDashboard />} /> */}
                 <Route path="preview/student/courses" element={<StudentCourses />} />
                 <Route path="preview/student/feed" element={<StudentFeed />} />
                 <Route path="preview/student/community" element={<StudentCommunity />} />
-                <Route path="preview/student/progress" element={<StudentProgress />} />
-                <Route path="preview/student/certificates" element={<StudentCertificates />} />
                 <Route path="preview/student/profile" element={<StudentProfile />} />
               </Route>
 
               <Route path="/" element={<Navigate to="/student/courses" replace />} />
               <Route path="*" element={<Navigate to="/student/courses" replace />} />
             </Routes>
-          </AnimatePresence>
+          </Suspense>
         </div>
 
       </div>

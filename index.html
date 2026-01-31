@@ -3,7 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#141414">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Infinito">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
     <title>LOVABLE INFINITO - Plataforma de Cursos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -122,6 +133,33 @@
         .animate-shine {
             animation: shine 4s infinite;
         }
+
+        /* External branding cleanup */
+        a[href*="lovable"],
+        a[href*="ai.studio"],
+        iframe[src*="lovable"],
+        iframe[src*="ai.studio"],
+        div[class*="badge"],
+        div[class*="watermark"],
+        div[style*="Edit with"],
+        div[style*="Made with"],
+        div[style*="Built with"],
+        .external-link-badge,
+        .platform-badge,
+        .builder-badge {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            position: absolute !important;
+            left: -9999px !important;
+            top: -9999px !important;
+            width: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+            clip: rect(0, 0, 0, 0) !important;
+            z-index: -9999 !important;
+        }
     </style>
     <script type="importmap">
 {
@@ -140,6 +178,51 @@
 
 <body class="bg-[#050507] text-slate-200">
     <div id="root"></div>
+    <script>
+        // External elements cleanup - runs before app initialization
+        (function () {
+            const cleanupSelectors = [
+                'a[href*="lovable"]',
+                'a[href*="ai.studio"]',
+                'iframe[src*="lovable"]',
+                'div[class*="badge"]',
+                'div[class*="watermark"]',
+                'div[style*="Edit with"]',
+                'div[style*="Made with"]',
+                'div[style*="Built with"]'
+            ];
+
+            function removeExternalElements() {
+                cleanupSelectors.forEach(selector => {
+                    document.querySelectorAll(selector).forEach(el => {
+                        if (el && el.parentNode) {
+                            el.parentNode.removeChild(el);
+                        }
+                    });
+                });
+            }
+
+            // Run cleanup on load
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', removeExternalElements);
+            } else {
+                removeExternalElements();
+            }
+
+            // Monitor for dynamically added elements
+            const observer = new MutationObserver(() => {
+                removeExternalElements();
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            // Periodic cleanup every 2 seconds
+            setInterval(removeExternalElements, 2000);
+        })();
+    </script>
     <script type="module" src="/index.tsx"></script>
 </body>
 

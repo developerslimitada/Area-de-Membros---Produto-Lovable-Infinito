@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { MessageCircle, X, Send, Bot, User, Headphones, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
-import { getLoggedUser } from '../../supabaseStore';
+import { getLoggedUser } from '../supabaseStore';
 
 interface Message {
     id: string;
@@ -26,6 +26,7 @@ const SupportFloatingButton: React.FC = () => {
     const [inputValue, setInputValue] = useState('');
     const [isHandoffRequested, setIsHandoffRequested] = useState(false);
     const [isBotTyping, setIsBotTyping] = useState(false);
+    const [loading, setLoading] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const user = getLoggedUser();
 
@@ -34,6 +35,94 @@ const SupportFloatingButton: React.FC = () => {
             scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
         }
     }, [messages, isBotTyping]);
+
+    // Load messages from Supabase when opening chat
+    useEffect(() => {
+        if (isOpen && user) {
+            loadMessages();
+            subscribeToMessages();
+        }
+    }, [isOpen, user]);
+
+    const loadMessages = async () => {
+        if (!user) return;
+
+        try {
+            setLoading(true);
+            const { data, error } = await supabase
+                .from('support_messages')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: true });
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                setMessages(data.map(msg => ({
+                    id: msg.id,
+                    content: msg.content,
+                    is_bot: msg.is_bot || false,
+                    is_admin: msg.is_admin || false,
+                    created_at: msg.created_at || new Date().toISOString()
+                })));
+                // If there are messages, user already interacted
+                setIsHandoffRequested(true);
+            }
+        } catch (err) {
+            console.error('Error loading messages:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const subscribeToMessages = () => {
+        if (!user) return;
+
+        const subscription = supabase
+            .channel(`support_messages_${user.id}`)
+            .on('postgres_changes', {
+                event: 'INSERT',
+                schema: 'public',
+                table: 'support_messages',
+                filter: `user_id=eq.${user.id}`
+            }, (payload) => {
+                const newMsg = payload.new as any;
+                // Only add if it's from admin (avoid duplicates)
+                if (newMsg.is_admin) {
+                    setMessages(prev => [...prev, {
+                        id: newMsg.id,
+                        content: newMsg.content,
+                        is_bot: newMsg.is_bot || false,
+                        is_admin: newMsg.is_admin || false,
+                        created_at: newMsg.created_at || new Date().toISOString()
+                    }]);
+                }
+            })
+            .subscribe();
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    };
+
+    const saveMessageToSupabase = async (content: string, isBot: boolean = false, isAdmin: boolean = false) => {
+        if (!user) return;
+
+        try {
+            const { error } = await supabase
+                .from('support_messages')
+                .insert([{
+                    user_id: user.id,
+                    content,
+                    is_bot: isBot,
+                    is_admin: isAdmin
+                }]);
+
+            if (error) throw error;
+        } catch (err) {
+            console.error('Error saving message:', err);
+        }
+    };
 
     const addMessage = (content: string, isBot: boolean = false, isAdmin: boolean = false) => {
         const newMessage: Message = {
@@ -49,40 +138,58 @@ const SupportFloatingButton: React.FC = () => {
     const handleSend = async (text: string = inputValue) => {
         if (!text.trim() || !user) return;
 
-        // Add user message
+        // Add user message locally
         addMessage(text, false);
         setInputValue('');
 
-        // If handoff requested, save to Supabase
+        // Save to Supabase
+        await saveMessageToSupabase(text, false, false);
+
+        // If handoff requested, don't send bot response
         if (isHandoffRequested) {
-            try {
-                await supabase.from('support_messages').insert({
-                    user_id: user.id,
-                    content: text,
-                    is_bot: false,
-                    is_admin: false
-                });
-            } catch (err) {
-                console.error('Error saving support message:', err);
-            }
             return;
         }
 
-        // Bot Response Logic
+        // Bot Response Logic with AI-like responses
         setIsBotTyping(true);
-        setTimeout(() => {
+        setTimeout(async () => {
             setIsBotTyping(false);
-            addMessage("Sinto muito, não entendi. Você gostaria de falar com um atendente humano?", true);
+
+            // Simple keyword matching for better responses
+            const lowerText = text.toLowerCase();
+            let botResponse = '';
+
+            if (lowerText.includes('acesso') || lowerText.includes('login') || lowerText.includes('senha')) {
+                botResponse = 'Para problemas de acesso, verifique se seu e-mail e senha estão corretos. Caso tenha esquecido a senha, use a opção "Esqueci minha senha" na tela de login. Precisa de mais ajuda?';
+            } else if (lowerText.includes('pagamento') || lowerText.includes('pagar') || lowerText.includes('compra')) {
+                botResponse = 'Nossos pagamentos são processados de forma segura. Você receberá um e-mail de confirmação assim que a transação for aprovada. Tem alguma dúvida específica sobre pagamento?';
+            } else if (lowerText.includes('certificado') || lowerText.includes('diploma')) {
+                botResponse = 'Os certificados ficam disponíveis automaticamente assim que você concluir 100% das aulas de um curso. Você pode acessá-los na aba "Certificados". Posso ajudar com mais alguma coisa?';
+            } else if (lowerText.includes('curso') || lowerText.includes('aula') || lowerText.includes('vídeo')) {
+                botResponse = 'Para acessar seus cursos, vá até a aba "Cursos" no menu principal. Lá você encontrará todos os cursos disponíveis e seu progresso. Precisa de ajuda com algum curso específico?';
+            } else if (lowerText.includes('atendente') || lowerText.includes('humano') || lowerText.includes('pessoa')) {
+                botResponse = 'Entendi. Vou encaminhar sua solicitação para um de nossos especialistas. Por favor, descreva seu problema em detalhes e aguarde o retorno.';
+                setIsHandoffRequested(true);
+            } else {
+                botResponse = 'Desculpe, não entendi completamente sua dúvida. Você gostaria de falar com um atendente humano? Ou pode escolher uma das opções do menu inicial.';
+            }
+
+            addMessage(botResponse, true);
+            await saveMessageToSupabase(botResponse, true, false);
         }, 1000);
     };
 
-    const handleFAQ = (option: typeof FAQ_OPTIONS[0]) => {
+    const handleFAQ = async (option: typeof FAQ_OPTIONS[0]) => {
         addMessage(option.label, false);
+        await saveMessageToSupabase(option.label, false, false);
+
         setIsBotTyping(true);
 
-        setTimeout(() => {
+        setTimeout(async () => {
             setIsBotTyping(false);
             addMessage(option.response, true);
+            await saveMessageToSupabase(option.response, true, false);
+
             if (option.handoff) {
                 setIsHandoffRequested(true);
             }
