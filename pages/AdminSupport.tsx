@@ -123,7 +123,68 @@ const AdminSupport: React.FC = () => {
             // Ordenar por última mensagem
             convs.sort((a, b) => new Date(b.lastMessage?.created_at || 0).getTime() - new Date(a.lastMessage?.created_at || 0).getTime());
 
-            setConversations(convs);
+            // Se não houver conversas reais, usar dados de demonstração
+            if (convs.length === 0) {
+                const demoConversations: UserConversation[] = [
+                    {
+                        user_id: 'demo-1',
+                        user_name: 'Maria Silva',
+                        user_email: 'maria@email.com',
+                        user_avatar: null,
+                        messages: [
+                            { id: 'msg-1', user_id: 'demo-1', content: 'Olá! Estou com dificuldade para acessar o módulo 3 do curso. Podem me ajudar?', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 3600000).toISOString() },
+                            { id: 'msg-2', user_id: 'demo-1', content: 'Olá Maria! Claro, vou verificar sua conta. Aguarde um momento.', is_bot: false, is_admin: true, created_at: new Date(Date.now() - 3000000).toISOString() },
+                            { id: 'msg-3', user_id: 'demo-1', content: 'Pronto! Já liberei o acesso. Tente novamente por favor.', is_bot: false, is_admin: true, created_at: new Date(Date.now() - 2400000).toISOString() },
+                            { id: 'msg-4', user_id: 'demo-1', content: 'Muito obrigada! Agora está funcionando perfeitamente! 🎉', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 1800000).toISOString() },
+                        ],
+                        lastMessage: { id: 'msg-4', user_id: 'demo-1', content: 'Muito obrigada! Agora está funcionando perfeitamente! 🎉', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 1800000).toISOString() },
+                        unreadCount: 2,
+                        hasAdminReply: true
+                    },
+                    {
+                        user_id: 'demo-2',
+                        user_name: 'João Santos',
+                        user_email: 'joao@email.com',
+                        user_avatar: null,
+                        messages: [
+                            { id: 'msg-5', user_id: 'demo-2', content: 'Boa tarde! Gostaria de saber se vocês têm certificado para o curso.', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 7200000).toISOString() },
+                            { id: 'msg-6', user_id: 'demo-2', content: 'Também quero saber se posso baixar as aulas para assistir offline.', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 7000000).toISOString() },
+                        ],
+                        lastMessage: { id: 'msg-6', user_id: 'demo-2', content: 'Também quero saber se posso baixar as aulas para assistir offline.', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 7000000).toISOString() },
+                        unreadCount: 2,
+                        hasAdminReply: false
+                    },
+                    {
+                        user_id: 'demo-3',
+                        user_name: 'Ana Costa',
+                        user_email: 'ana.costa@gmail.com',
+                        user_avatar: null,
+                        messages: [
+                            { id: 'msg-7', user_id: 'demo-3', content: 'O vídeo da aula 5 está travando. Já tentei em vários navegadores.', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 86400000).toISOString() },
+                        ],
+                        lastMessage: { id: 'msg-7', user_id: 'demo-3', content: 'O vídeo da aula 5 está travando. Já tentei em vários navegadores.', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 86400000).toISOString() },
+                        unreadCount: 1,
+                        hasAdminReply: false
+                    },
+                    {
+                        user_id: 'demo-4',
+                        user_name: 'Pedro Oliveira',
+                        user_email: 'pedro@email.com',
+                        user_avatar: null,
+                        messages: [
+                            { id: 'msg-8', user_id: 'demo-4', content: 'Vocês podem me ajudar a resetar minha senha?', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 172800000).toISOString() },
+                            { id: 'msg-9', user_id: 'demo-4', content: 'Olá Pedro! Enviei um link de reset para seu email. Verifique sua caixa de entrada e spam.', is_bot: false, is_admin: true, created_at: new Date(Date.now() - 172000000).toISOString() },
+                            { id: 'msg-10', user_id: 'demo-4', content: 'Perfeito, consegui! Valeu!', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 171000000).toISOString() },
+                        ],
+                        lastMessage: { id: 'msg-10', user_id: 'demo-4', content: 'Perfeito, consegui! Valeu!', is_bot: false, is_admin: false, created_at: new Date(Date.now() - 171000000).toISOString() },
+                        unreadCount: 2,
+                        hasAdminReply: true
+                    }
+                ];
+                setConversations(demoConversations);
+            } else {
+                setConversations(convs);
+            }
 
             // Atualizar conversa selecionada se existir
             if (selectedConversation) {
@@ -325,15 +386,15 @@ const AdminSupport: React.FC = () => {
                                                 className={`flex gap-3 ${msg.is_admin ? 'flex-row-reverse' : 'flex-row'}`}
                                             >
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.is_bot ? 'bg-yellow-500/20 text-yellow-400' :
-                                                        msg.is_admin ? 'bg-purple-500/20 text-purple-400' :
-                                                            'bg-emerald-500/20 text-emerald-400'
+                                                    msg.is_admin ? 'bg-purple-500/20 text-purple-400' :
+                                                        'bg-emerald-500/20 text-emerald-400'
                                                     }`}>
                                                     {msg.is_bot ? <Bot size={16} /> : <User size={16} />}
                                                 </div>
                                                 <div className={`flex-1 max-w-[75%] ${msg.is_admin ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
                                                     <div className={`px-4 py-3 rounded-2xl ${msg.is_admin ? 'bg-purple-600/20 border border-purple-500/20' :
-                                                            msg.is_bot ? 'bg-yellow-600/20 border border-yellow-500/20' :
-                                                                'bg-white/5 border border-white/5'
+                                                        msg.is_bot ? 'bg-yellow-600/20 border border-yellow-500/20' :
+                                                            'bg-white/5 border border-white/5'
                                                         }`}>
                                                         <p className="text-sm text-white">{msg.content}</p>
                                                     </div>

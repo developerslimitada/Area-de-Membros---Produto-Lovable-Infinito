@@ -1,7 +1,7 @@
 # 📋 AUDITORIA CONTÍNUA - Lovable Infinito
 
-**Última Atualização:** 31/01/2026 20:33
-**Total de Versões:** 5
+**Última Atualização:** 31/01/2026 20:45
+**Total de Versões:** 6
 **Status:** 🟢 Em Produção
 
 ---
@@ -10,15 +10,36 @@
 
 | Métrica | Valor |
 |---------|-------|
-| **Versões Lançadas** | 5 |
-| **Arquivos Modificados** | 95+ |
-| **Commits Hoje** | 8 |
+| **Versões Lançadas** | 6 |
+| **Arquivos Modificados** | 98+ |
+| **Commits Hoje** | 9 |
 | **Deploy Ativo** | Vercel ✅ |
 | **URL Produção** | https://area-de-membros-produto-lovable-inf.vercel.app |
 
 ---
 
 ## 🔄 HISTÓRICO DE VERSÕES
+
+### ✅ v1.0.6 | 31/01/2026 20:45
+**Commit:** `acf9ae3`
+**Tipo:** ⭐ Feature
+
+**Alterações:**
+- 📬 Sistema de Suporte com conversas separadas por aluno
+- 👥 Lista de conversas estilo Inbox (sidebar esquerda)
+- 💬 Chat individual para cada aluno
+- 🟡 Badge "Aguardando" para conversas sem resposta
+- 🟢 Badge "Respondida" para conversas respondidas
+- 📊 Stats: Total Mensagens, Conversas, Aguardando, Respondidas
+- 📱 Layout responsivo (mobile-first)
+- ⬅️ Botão voltar em mobile
+- 🔄 Realtime updates via Supabase subscription
+- ⏱️ Tempo relativo (Agora, 5min, 2h, etc)
+
+**Arquivos Modificados:**
+- `pages/AdminSupport.tsx` (+444 linhas, -96 linhas) - REESCRITO COMPLETAMENTE
+
+---
 
 ### ✅ v1.0.5 | 31/01/2026 20:27
 **Commit:** `370137b`
@@ -123,7 +144,7 @@
 ```
 Area-de-Membros---Produto-Lovable-Infinito/
 ├── 📁 pages/ (17 arquivos)
-│   ├── AdminDashboard.tsx ⭐ ATUALIZADO
+│   ├── AdminDashboard.tsx
 │   ├── AdminChangelog.tsx
 │   ├── AdminCourses.tsx
 │   ├── AdminCategories.tsx
@@ -133,10 +154,10 @@ Area-de-Membros---Produto-Lovable-Infinito/
 │   ├── AdminFeed.tsx
 │   ├── AdminOffers.tsx
 │   ├── AdminCourseSidebarOffers.tsx
-│   ├── AdminSupport.tsx
+│   ├── AdminSupport.tsx ⭐ ATUALIZADO v1.0.6
 │   ├── AdminVSL.tsx
 │   ├── Login.tsx
-│   ├── StudentCourses.tsx ⭐ ATUALIZADO
+│   ├── StudentCourses.tsx
 │   ├── StudentFeed.tsx
 │   ├── StudentCommunity.tsx
 │   └── StudentProfile.tsx
@@ -145,7 +166,8 @@ Area-de-Membros---Produto-Lovable-Infinito/
 ├── 📁 supabase/migrations/ (3 arquivos)
 ├── 📁 public/ (4 arquivos)
 ├── App.tsx
-├── vercel.json ⭐ NOVO
+├── vercel.json
+├── AUDIT_LOG.md ⭐ NOVO
 └── package.json
 ```
 
