@@ -326,58 +326,7 @@ const StudentProfile: React.FC = () => {
         </div>
       </section>
 
-      {/* Device Selector */}
-      <section className="space-y-6">
-        <h2 className="text-xs font-black uppercase tracking-[0.3em] text-slate-500 px-1">Meu Dispositivo</h2>
-        <div className="bg-[#0f0f13] p-6 rounded-[2.5rem] border border-white/5 shadow-xl">
-          <div className="flex items-center gap-4 mb-4">
-            <Smartphone className="text-cyan-400" size={24} />
-            <div>
-              <p className="text-white font-bold">Qual celular você usa?</p>
-              <p className="text-xs text-slate-500">Isso nos ajuda a personalizar sua experiência</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => handleSelectDevice('android')}
-              disabled={savingDevice}
-              className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-center gap-3 ${deviceType === 'android'
-                ? 'border-green-500 bg-green-500/20 text-green-400'
-                : 'border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:border-white/20'
-                }`}
-            >
-              <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
-                <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zm-1-8.5c0-.83.67-1.5 1.5-1.5S8 8.67 8 9.5v5c0 .83-.67 1.5-1.5 1.5S5 15.33 5 14.5v-5zM17 9.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5v-5zM15.53 2.16l1.3-1.3c.2-.2.2-.51 0-.71s-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
-              </svg>
-              <span className="font-bold text-sm uppercase tracking-wider">Android</span>
-              {deviceType === 'android' && <Check size={18} className="text-green-400" />}
-            </button>
-
-            <button
-              onClick={() => handleSelectDevice('iphone')}
-              disabled={savingDevice}
-              className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-center gap-3 ${deviceType === 'iphone'
-                ? 'border-slate-300 bg-slate-500/20 text-slate-200'
-                : 'border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:border-white/20'
-                }`}
-            >
-              <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
-                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-              </svg>
-              <span className="font-bold text-sm uppercase tracking-wider">iPhone</span>
-              {deviceType === 'iphone' && <Check size={18} className="text-slate-200" />}
-            </button>
-          </div>
-
-          {savingDevice && (
-            <div className="mt-4 flex items-center justify-center gap-2 text-cyan-400">
-              <div className="w-4 h-4 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin"></div>
-              <span className="text-sm font-bold">Salvando...</span>
-            </div>
-          )}
-        </div>
-      </section>
+      {/* Device type is collected only once via popup on first access */}
 
       {/* Settings Modal */}
       <AnimatePresence>
