@@ -1,7 +1,7 @@
 # 📋 AUDITORIA CONTÍNUA - Lovable Infinito
 
-**Última Atualização:** 31/01/2026 21:22
-**Total de Versões:** 13
+**Última Atualização:** 31/01/2026 22:04
+**Total de Versões:** 16
 **Status:** 🟢 Em Produção
 
 ---
@@ -10,9 +10,9 @@
 
 | Métrica | Valor |
 |---------|-------|
-| **Versões** | 13 |
-| **Features** | 6 |
-| **Fixes** | 5 |
+| **Versões** | 16 |
+| **Features** | 8 |
+| **Fixes** | 6 |
 | **Performance** | 1 |
 | **Releases** | 1 |
 
@@ -22,7 +22,10 @@
 
 | # | Versão | Nome | Keywords | Tipo |
 |---|--------|------|----------|------|
-| 13 | **1.0.12** | Lista Simplificada | `Vertical` `Keywords` `Static` | 🔧 Fix |
+| 16 | **1.0.15** | App Icon Branding | `Ícone` `PWA` `Logo` | ⭐ Feature |
+| 15 | 1.0.14 | Popup Uma Vez | `Primeiro Acesso` `Discreto` `Uma Vez` | 🔧 Fix |
+| 14 | 1.0.13 | Cross-Sell Premium | `Luxúria` `Native Ads` `Conversão` | ⭐ Feature |
+| 13 | 1.0.12 | Lista Simplificada | `Vertical` `Keywords` `Static` | 🔧 Fix |
 | 12 | 1.0.11 | Histórico Completo | `Changelog` `Timeline` `Versões` | ⭐ Feature |
 | 11 | 1.0.10 | Popup Discreto | `Fade` `Transparente` `Silencioso` | 🔧 Fix |
 | 10 | 1.0.9 | Seletor de Dispositivo | `Android` `iPhone` `Primeiro Acesso` | ⭐ Feature |
@@ -38,7 +41,7 @@
 
 ---
 
-## � SINCRONIZAÇÃO
+## 🔗 SINCRONIZAÇÃO
 
 Os dados acima são exibidos automaticamente em:
 - **Admin → Histórico de Atualizações** (`/admin/changelog`)
@@ -49,4 +52,4 @@ A cada nova versão, atualizar:
 
 ---
 
-**⚡ Atualizado: 31/01/2026 21:22**
+**⚡ Atualizado: 31/01/2026 22:04**
