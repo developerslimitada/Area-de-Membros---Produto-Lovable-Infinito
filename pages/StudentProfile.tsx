@@ -82,21 +82,20 @@ const StudentProfile: React.FC = () => {
   };
 
   const handleSelectDevice = async (device: 'android' | 'iphone') => {
-    if (!user) return;
+    if (!user || savingDevice) return;
     setSavingDevice(true);
     try {
-      const { error } = await supabase
+      await supabase
         .from('profiles')
         .update({ device_type: device })
         .eq('id', user.id);
 
-      if (error) throw error;
-
       setDeviceType(device);
       setShowDevicePopup(false);
     } catch (err) {
+      // Silencioso - não mostra erro pro aluno
       console.error('Error saving device type:', err);
-      alert('Erro ao salvar. Tente novamente.');
+      setShowDevicePopup(false);
     } finally {
       setSavingDevice(false);
     }
@@ -181,66 +180,54 @@ const StudentProfile: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto pb-12 animate-in fade-in duration-700 space-y-10">
-      {/* Device Selection Popup - First Access */}
+      {/* Device Selection Popup - Discreto e Natural */}
       <AnimatePresence>
         {showDevicePopup && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
           >
             <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="bg-[#0f0f13] w-full max-w-md rounded-[2.5rem] border border-white/10 p-8 shadow-2xl relative overflow-hidden"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="bg-[#1a1a1f]/95 w-full max-w-sm rounded-3xl border border-white/10 p-6 shadow-xl"
             >
-              <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-600/20 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-purple-600/20 rounded-full blur-[80px] -ml-24 -mb-24 pointer-events-none" />
+              <p className="text-center text-white/80 text-sm font-medium mb-5">
+                Personalize sua experiência
+              </p>
 
-              <div className="text-center relative z-10 mb-8">
-                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-cyan-500 to-purple-600 rounded-3xl flex items-center justify-center">
-                  <Smartphone size={40} className="text-white" />
-                </div>
-                <h2 className="text-2xl font-black text-white tracking-tight">Qual celular você usa?</h2>
-                <p className="text-slate-400 text-sm mt-2">Selecione para ter a melhor experiência</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 relative z-10">
+              <div className="flex gap-3">
                 <button
                   onClick={() => handleSelectDevice('android')}
                   disabled={savingDevice}
-                  className={`p-6 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 ${savingDevice ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'
-                    } border-green-500/30 bg-green-500/10 hover:bg-green-500/20 hover:border-green-500/50`}
+                  className="flex-1 py-4 px-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-2 active:scale-95"
                 >
-                  <div className="w-16 h-16 bg-green-500/20 rounded-2xl flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" className="w-10 h-10 text-green-400" fill="currentColor">
-                      <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zm-1-8.5c0-.83.67-1.5 1.5-1.5S8 8.67 8 9.5v5c0 .83-.67 1.5-1.5 1.5S5 15.33 5 14.5v-5zM17 9.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5v-5zM15.53 2.16l1.3-1.3c.2-.2.2-.51 0-.71s-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
-                    </svg>
-                  </div>
-                  <span className="font-black text-white text-sm uppercase tracking-widest">Android</span>
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 text-green-400" fill="currentColor">
+                    <path d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zm-1-8.5c0-.83.67-1.5 1.5-1.5S8 8.67 8 9.5v5c0 .83-.67 1.5-1.5 1.5S5 15.33 5 14.5v-5zM17 9.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5v-5zM15.53 2.16l1.3-1.3c.2-.2.2-.51 0-.71s-.51-.2-.71 0l-1.48 1.48A5.84 5.84 0 0012 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+                  </svg>
+                  <span className="text-white/90 text-sm font-medium">Android</span>
                 </button>
 
                 <button
                   onClick={() => handleSelectDevice('iphone')}
                   disabled={savingDevice}
-                  className={`p-6 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 ${savingDevice ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'
-                    } border-slate-400/30 bg-slate-500/10 hover:bg-slate-500/20 hover:border-slate-400/50`}
+                  className="flex-1 py-4 px-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-2 active:scale-95"
                 >
-                  <div className="w-16 h-16 bg-slate-500/20 rounded-2xl flex items-center justify-center">
-                    <svg viewBox="0 0 24 24" className="w-10 h-10 text-slate-300" fill="currentColor">
-                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-                    </svg>
-                  </div>
-                  <span className="font-black text-white text-sm uppercase tracking-widest">iPhone</span>
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 text-slate-300" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                  </svg>
+                  <span className="text-white/90 text-sm font-medium">iPhone</span>
                 </button>
               </div>
 
               {savingDevice && (
-                <div className="mt-6 flex items-center justify-center gap-2 text-cyan-400">
-                  <div className="w-4 h-4 border-2 border-cyan-400/30 border-t-cyan-400 rounded-full animate-spin"></div>
-                  <span className="text-sm font-bold">Salvando...</span>
+                <div className="mt-4 flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-white/20 border-t-white/60 rounded-full animate-spin"></div>
                 </div>
               )}
             </motion.div>
@@ -356,8 +343,8 @@ const StudentProfile: React.FC = () => {
               onClick={() => handleSelectDevice('android')}
               disabled={savingDevice}
               className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-center gap-3 ${deviceType === 'android'
-                  ? 'border-green-500 bg-green-500/20 text-green-400'
-                  : 'border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:border-white/20'
+                ? 'border-green-500 bg-green-500/20 text-green-400'
+                : 'border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:border-white/20'
                 }`}
             >
               <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
@@ -371,8 +358,8 @@ const StudentProfile: React.FC = () => {
               onClick={() => handleSelectDevice('iphone')}
               disabled={savingDevice}
               className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-center gap-3 ${deviceType === 'iphone'
-                  ? 'border-slate-300 bg-slate-500/20 text-slate-200'
-                  : 'border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:border-white/20'
+                ? 'border-slate-300 bg-slate-500/20 text-slate-200'
+                : 'border-white/10 bg-white/5 text-slate-400 hover:bg-white/10 hover:border-white/20'
                 }`}
             >
               <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
