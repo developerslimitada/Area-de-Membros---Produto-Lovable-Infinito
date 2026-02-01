@@ -11,6 +11,7 @@ interface Version {
 
 // Histórico de versões baseado na auditoria contínua
 const versions: Version[] = [
+    { version: '1.0.13', name: 'Cross-Sell Premium', keywords: ['Luxúria', 'Native Ads', 'Conversão'], type: 'feature' },
     { version: '1.0.12', name: 'Lista Simplificada', keywords: ['Vertical', 'Keywords', 'Static'], type: 'fix' },
     { version: '1.0.11', name: 'Histórico Completo', keywords: ['Changelog', 'Timeline', 'Versões'], type: 'feature' },
     { version: '1.0.10', name: 'Popup Discreto', keywords: ['Fade', 'Transparente', 'Silencioso'], type: 'fix' },
