@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, ShoppingBag, X, DollarSign, Link as LinkIcon, Tag, LayoutGrid, Crown, Zap } from 'lucide-react';
+import { Plus, Edit2, Trash2, ShoppingBag, X, DollarSign, Link as LinkIcon, Tag, LayoutGrid, Crown, Zap, Star } from 'lucide-react';
 import { getDB, initializeStore, subscribeToChanges } from '../supabaseStore';
 import { SidebarOffer } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -106,6 +106,45 @@ const AdminCourseSidebarOffers: React.FC = () => {
         }
     };
 
+
+    const handleSetFeatured = async (id: string) => {
+        const offer = offers.find(o => o.id === id);
+        if (!offer || (offer.key === 'cross_sell' && offer.is_active) || saving) return;
+
+        try {
+            setSaving(true);
+            setMessage(null);
+
+            // 1. Resetar qualquer cross_sell existente para tipo comum
+            const existingFeatured = offers.find(o => o.key === 'cross_sell');
+            if (existingFeatured && existingFeatured.id !== id) {
+                await supabase
+                    .from('course_sidebar_offers')
+                    .update({ key: 'sidebar_generic' })
+                    .eq('id', existingFeatured.id);
+            }
+
+            // 2. Definir a nova como cross_sell (destaque)
+            const { error } = await supabase
+                .from('course_sidebar_offers')
+                .update({
+                    key: 'cross_sell',
+                    is_active: true
+                })
+                .eq('id', id);
+
+            if (error) throw error;
+
+            setMessage({ type: 'success', text: 'Oferta definida como destaque de Luxúria!' });
+            await loadData();
+        } catch (err) {
+            console.error('Error setting featured offer:', err);
+            setMessage({ type: 'error', text: 'Erro ao definir destaque.' });
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const handleDelete = async (id: string) => {
         if (window.confirm('Excluir esta oferta permanentemente?')) {
             try {
@@ -193,8 +232,10 @@ const AdminCourseSidebarOffers: React.FC = () => {
                                         <div className="flex items-center gap-3">
                                             {offer.key === 'vip_group' ? (
                                                 <Crown className="text-purple-400" size={20} />
-                                            ) : (
+                                            ) : offer.key === 'cross_sell' ? (
                                                 <Zap className="text-yellow-400" size={20} />
+                                            ) : (
+                                                <Tag className="text-slate-400" size={20} />
                                             )}
                                             <div>
                                                 <p className="font-extrabold text-sm text-white">{offer.key}</p>
@@ -229,6 +270,17 @@ const AdminCourseSidebarOffers: React.FC = () => {
                                     </td>
                                     <td className="px-8 py-6 text-right">
                                         <div className="flex items-center justify-end gap-3">
+                                            <button
+                                                onClick={() => handleSetFeatured(offer.id)}
+                                                disabled={saving}
+                                                className={`p-3 transition-all rounded-xl border ${offer.key === 'cross_sell'
+                                                    ? 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20 shadow-[0_0_15px_rgba(250,204,21,0.2)]'
+                                                    : 'text-slate-600 hover:text-yellow-400 hover:bg-yellow-400/10 border-transparent hover:border-yellow-400/20'
+                                                    }`}
+                                                title={offer.key === 'cross_sell' ? 'Oferta em Destaque' : 'Definir como Destaque'}
+                                            >
+                                                <Star size={18} fill={offer.key === 'cross_sell' ? 'currentColor' : 'none'} strokeWidth={offer.key === 'cross_sell' ? 1.5 : 2.5} />
+                                            </button>
                                             <button
                                                 onClick={() => openModal(offer)}
                                                 className="p-3 text-slate-500 hover:text-indigo-400 transition-all rounded-xl hover:bg-indigo-500/10 border border-transparent hover:border-indigo-500/20"
@@ -282,9 +334,9 @@ const AdminCourseSidebarOffers: React.FC = () => {
                                             onChange={(e) => setFormData({ ...formData, key: e.target.value })}
                                             className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-indigo-500/50 focus:bg-white/10 transition-all text-white text-sm font-bold"
                                         >
-                                            <option value="">Selecione...</option>
+                                            <option value="sidebar_generic">sidebar_generic (Oferta Comum)</option>
                                             <option value="vip_group">vip_group (Grupo VIP)</option>
-                                            <option value="cross_sell">cross_sell (Cross-sell)</option>
+                                            <option value="cross_sell">cross_sell (Destaque Luxúria)</option>
                                         </select>
                                     </div>
                                     <div className="space-y-2">

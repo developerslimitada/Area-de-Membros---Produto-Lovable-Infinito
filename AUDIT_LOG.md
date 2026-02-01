@@ -1,7 +1,7 @@
 # 📋 AUDITORIA CONTÍNUA - Lovable Infinito
 
-**Última Atualização:** 31/01/2026 22:04
-**Total de Versões:** 16
+**Última Atualização:** 31/01/2026 22:15
+**Total de Versões:** 17
 **Status:** 🟢 Em Produção
 
 ---
@@ -10,7 +10,7 @@
 
 | Métrica | Valor |
 |---------|-------|
-| **Versões** | 16 |
+| **Versões** | 17 |
 | **Features** | 8 |
 | **Fixes** | 6 |
 | **Performance** | 1 |
@@ -22,7 +22,8 @@
 
 | # | Versão | Nome | Keywords | Tipo |
 |---|--------|------|----------|------|
-| 16 | **1.0.15** | App Icon Branding | `Ícone` `PWA` `Logo` | ⭐ Feature |
+| 17 | **1.0.16** | Destaque Dinâmico | `Oferta` `Highlight` `Admin` | ⭐ Feature |
+| 16 | 1.0.15 | App Icon Branding | `Ícone` `PWA` `Logo` | ⭐ Feature |
 | 15 | 1.0.14 | Popup Uma Vez | `Primeiro Acesso` `Discreto` `Uma Vez` | 🔧 Fix |
 | 14 | 1.0.13 | Cross-Sell Premium | `Luxúria` `Native Ads` `Conversão` | ⭐ Feature |
 | 13 | 1.0.12 | Lista Simplificada | `Vertical` `Keywords` `Static` | 🔧 Fix |
@@ -52,4 +53,4 @@ A cada nova versão, atualizar:
 
 ---
 
-**⚡ Atualizado: 31/01/2026 22:04**
+**⚡ Atualizado: 31/01/2026 22:15**
