@@ -852,61 +852,95 @@ const StudentCourses: React.FC = () => {
                       )}
                     </div>
 
-                    {/* High-Conversion Promo Section */}
+                    {/* LUXURY CROSS-SELL - Native Ads Style */}
                     {sidebarOffers.find(o => o.key === 'cross_sell') && (
-                      <div className="relative group">
-                        <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-600 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                        <div className="relative p-[1px] bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 rounded-2xl md:rounded-[2.5rem] overflow-hidden shadow-2xl">
-                          <div className="bg-[#121212] rounded-[calc(1rem-3px)] md:rounded-[2.4rem] p-6 md:p-8 space-y-5 relative overflow-hidden">
-                            {/* Animated Shine Effect */}
-                            <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-40 group-hover:animate-shine" />
+                      <div className="relative group cursor-pointer" onClick={() => window.open(sidebarOffers.find(o => o.key === 'cross_sell').button_url, '_blank')}>
+                        {/* Premium Glow Effect */}
+                        <div className="absolute -inset-2 bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-500 rounded-[2rem] blur-xl opacity-30 group-hover:opacity-60 transition-all duration-700 animate-pulse"></div>
 
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-1.5">
-                                <span className="flex h-2 w-2 rounded-full bg-red-600 animate-pulse"></span>
-                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Oferta Expirando</span>
+                        {/* Main Card */}
+                        <div className="relative bg-gradient-to-br from-[#1a1814] via-[#151310] to-[#0d0b09] rounded-[1.5rem] overflow-hidden border border-amber-500/20 group-hover:border-amber-400/40 transition-all duration-500 shadow-2xl shadow-amber-900/20">
+
+                          {/* Luxury Shine Animation */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-400/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+
+                          {/* Top Badge - Urgency */}
+                          <div className="bg-gradient-to-r from-red-600 to-red-500 px-4 py-2 flex items-center justify-center gap-2">
+                            <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                            <span className="text-[10px] font-black text-white uppercase tracking-[0.3em]">🔥 Último Dia de Desconto</span>
+                          </div>
+
+                          <div className="p-6 space-y-5">
+                            {/* Exclusive Badge */}
+                            <div className="flex items-center gap-2">
+                              <div className="px-3 py-1 bg-gradient-to-r from-amber-500/20 to-yellow-500/20 border border-amber-500/30 rounded-full">
+                                <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest">👑 Acesso VIP Exclusivo</span>
                               </div>
                             </div>
 
+                            {/* Title with Premium Feel */}
                             <div className="space-y-2">
-                              <h4 className="font-black text-xl md:text-2xl tracking-tight text-white group-hover:text-yellow-400 transition-colors">
+                              <h4 className="font-black text-2xl tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-200 leading-tight">
                                 {sidebarOffers.find(o => o.key === 'cross_sell').title}
                               </h4>
-                              <p className="text-xs text-slate-400 leading-relaxed font-medium line-clamp-2">
+                              <p className="text-sm text-amber-100/70 leading-relaxed font-medium">
                                 {sidebarOffers.find(o => o.key === 'cross_sell').description}
                               </p>
                             </div>
 
-                            <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/5 space-y-3">
-                              <div className="flex items-baseline gap-2">
-                                {sidebarOffers.find(o => o.key === 'cross_sell').price_promocional > 0 && (
-                                  <span className="text-2xl font-black text-white tracking-tighter">
-                                    R$ {sidebarOffers.find(o => o.key === 'cross_sell').price_promocional.toFixed(2)}
-                                  </span>
-                                )}
-                                {sidebarOffers.find(o => o.key === 'cross_sell').price_original > 0 && (
-                                  <span className="text-xs text-slate-600 line-through font-bold">
-                                    R$ {sidebarOffers.find(o => o.key === 'cross_sell').price_original.toFixed(2)}
-                                  </span>
-                                )}
+                            {/* Social Proof */}
+                            <div className="flex items-center gap-3 py-3 border-y border-amber-500/10">
+                              <div className="flex -space-x-2">
+                                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 border-2 border-[#151310] flex items-center justify-center text-[10px] font-bold text-black">M</div>
+                                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 border-2 border-[#151310] flex items-center justify-center text-[10px] font-bold text-black">J</div>
+                                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-red-500 border-2 border-[#151310] flex items-center justify-center text-[10px] font-bold text-black">A</div>
                               </div>
-                              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-500 bg-emerald-500/10 w-fit px-2 py-1 rounded">
-                                <CheckCircle size={10} />
-                                Economia Imediata Ativa
+                              <p className="text-[10px] text-amber-200/60 font-medium">+847 pessoas garantiram hoje</p>
+                            </div>
+
+                            {/* Price with Luxury Feel */}
+                            <div className="bg-black/30 rounded-2xl p-4 border border-amber-500/10 space-y-3">
+                              <div className="flex items-end justify-between">
+                                <div>
+                                  <p className="text-[10px] text-amber-400/60 font-bold uppercase tracking-widest mb-1">Investimento único</p>
+                                  <div className="flex items-baseline gap-2">
+                                    {sidebarOffers.find(o => o.key === 'cross_sell').price_promocional > 0 && (
+                                      <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-400">
+                                        R$ {sidebarOffers.find(o => o.key === 'cross_sell').price_promocional.toFixed(0)}
+                                      </span>
+                                    )}
+                                    {sidebarOffers.find(o => o.key === 'cross_sell').price_original > 0 && (
+                                      <span className="text-sm text-red-400/70 line-through font-bold">
+                                        R$ {sidebarOffers.find(o => o.key === 'cross_sell').price_original.toFixed(0)}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="px-3 py-1.5 bg-emerald-500/20 border border-emerald-500/30 rounded-xl">
+                                  <span className="text-[10px] font-black text-emerald-400 uppercase">-40% OFF</span>
+                                </div>
+                              </div>
+
+                              {/* Scarcity */}
+                              <div className="flex items-center gap-2 text-[10px] text-amber-300/80 font-bold">
+                                <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                                Apenas 7 vagas restantes nessa condição
                               </div>
                             </div>
 
-                            <button
-                              onClick={() => window.open(sidebarOffers.find(o => o.key === 'cross_sell').button_url, '_blank')}
-                              className="w-full py-4 bg-gradient-to-r from-yellow-500 to-amber-600 text-black rounded-xl md:rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_10px_30px_-10px_rgba(234,179,8,0.5)] flex items-center justify-center gap-2"
-                            >
-                              <ShoppingCart size={16} strokeWidth={3} />
-                              {sidebarOffers.find(o => o.key === 'cross_sell').button_text}
+                            {/* CTA Button - Premium */}
+                            <button className="w-full py-4 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-black rounded-xl font-black text-sm uppercase tracking-[0.15em] transition-all duration-300 hover:shadow-[0_0_40px_rgba(251,191,36,0.4)] hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3 relative overflow-hidden group/btn">
+                              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></span>
+                              <ShoppingCart size={18} strokeWidth={2.5} />
+                              <span>Quero Garantir Minha Vaga</span>
                             </button>
 
-                            <p className="text-[9px] text-center text-slate-600 font-bold uppercase tracking-widest">
-                              * Vagas limitadas para esta condição especial
-                            </p>
+                            {/* Trust Badges */}
+                            <div className="flex items-center justify-center gap-4 text-[9px] text-amber-400/50 font-medium">
+                              <span className="flex items-center gap-1">🔒 Pagamento Seguro</span>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">✓ Acesso Imediato</span>
+                            </div>
                           </div>
                         </div>
                       </div>
