@@ -1,171 +1,52 @@
 # 📋 AUDITORIA CONTÍNUA - Lovable Infinito
 
-**Última Atualização:** 31/01/2026 21:12
-**Total de Versões:** 11
+**Última Atualização:** 31/01/2026 21:22
+**Total de Versões:** 13
 **Status:** 🟢 Em Produção
 
 ---
 
-## 📊 RESUMO RÁPIDO
+## 📊 RESUMO
 
 | Métrica | Valor |
 |---------|-------|
-| **Versões Lançadas** | 11 |
+| **Versões** | 13 |
 | **Features** | 6 |
-| **Fixes** | 4 |
+| **Fixes** | 5 |
 | **Performance** | 1 |
 | **Releases** | 1 |
-| **Deploy Ativo** | Vercel ✅ |
-| **URL Produção** | https://area-de-membros-produto-lovable-inf.vercel.app |
 
 ---
 
-## 🔄 HISTÓRICO DE VERSÕES
+## 🔄 VERSÕES
 
-### ✅ v1.0.11 | 31/01/2026 21:12 ⬅️ ATUAL
-**Commit:** `cdbbc6c`
-**Tipo:** ⭐ Feature
-
-**Alterações:**
-- 📜 Página de Histórico com todas as versões
-- 📊 Contador de Features/Fixes/Perf/Releases
-- 🏷️ Badge da versão atual
-- � Data e hora de cada lançamento
-- 💻 Hash do commit de cada versão
-- 🎨 Cards com cores por tipo de alteração
-
-**Arquivos Modificados:**
-- `pages/AdminChangelog.tsx` (+277 linhas, -104 linhas)
-
----
-
-### ✅ v1.0.10 | 31/01/2026 21:05
-**Commit:** `3b30c33`
-**Tipo:** 🔧 Fix
-
-**Alterações:**
-- 🌫️ Popup discreto com fade transparente (40%)
-- ✨ Design minimalista
-- 🔇 Sem alertas de erro
-- ⚡ Animação suave de entrada
+| # | Versão | Nome | Keywords | Tipo |
+|---|--------|------|----------|------|
+| 13 | **1.0.12** | Lista Simplificada | `Vertical` `Keywords` `Static` | 🔧 Fix |
+| 12 | 1.0.11 | Histórico Completo | `Changelog` `Timeline` `Versões` | ⭐ Feature |
+| 11 | 1.0.10 | Popup Discreto | `Fade` `Transparente` `Silencioso` | 🔧 Fix |
+| 10 | 1.0.9 | Seletor de Dispositivo | `Android` `iPhone` `Primeiro Acesso` | ⭐ Feature |
+| 9 | 1.0.8 | Dashboard Rápido | `Promise.all` `Paralelo` `Instantâneo` | ⚡ Perf |
+| 8 | 1.0.7 | Demo no Suporte | `Conversas` `Exemplo` `Mockup` | ⭐ Feature |
+| 7 | 1.0.6 | Suporte Inbox | `Chat` `Alunos` `Separado` | ⭐ Feature |
+| 6 | 1.0.5 | Sem Comentários | `Removido` `Aulas` `Limpo` | 🔧 Fix |
+| 5 | 1.0.4 | Dashboard KPIs | `Métricas` `Gargalos` `Analytics` | ⭐ Feature |
+| 4 | 1.0.3 | Dashboard CRM | `Gráficos` `Moderno` `Design` | ⭐ Feature |
+| 3 | 1.0.2 | Rota Admin | `Dashboard` `Inicial` `Default` | 🔧 Fix |
+| 2 | 1.0.1 | Vercel SPA | `Routing` `404` `Fix` | 🔧 Fix |
+| 1 | 1.0.0 | Release Inicial | `PWA` `Supabase` `Completo` | 🚀 Release |
 
 ---
 
-### ✅ v1.0.9 | 31/01/2026 21:02
-**Commit:** `8d71df5`
-**Tipo:** ⭐ Feature
+## � SINCRONIZAÇÃO
 
-**Alterações:**
-- 📱 Seletor de Dispositivo Android/iPhone
-- 🎯 Popup no primeiro acesso
-- 💾 Salvamento automático no Supabase
+Os dados acima são exibidos automaticamente em:
+- **Admin → Histórico de Atualizações** (`/admin/changelog`)
 
----
-
-### ✅ v1.0.8 | 31/01/2026 20:54
-**Commit:** `5224e50`
-**Tipo:** ⚡ Performance
-
-**Alterações:**
-- 🚀 Dashboard com 21 consultas em paralelo
-- ⚡ Carregamento instantâneo
+A cada nova versão, atualizar:
+1. Este arquivo `AUDIT_LOG.md`
+2. Array `versions[]` em `pages/AdminChangelog.tsx`
 
 ---
 
-### ✅ v1.0.7 | 31/01/2026 20:49
-**Commit:** `971f5f1`
-**Tipo:** ⭐ Feature
-
-**Alterações:**
-- 📬 Dados demo no Suporte
-- 👥 4 conversas de exemplo
-
----
-
-### ✅ v1.0.6 | 31/01/2026 20:45
-**Commit:** `acf9ae3`
-**Tipo:** ⭐ Feature
-
-**Alterações:**
-- 📬 Suporte estilo Inbox
-- 👥 Conversas separadas por aluno
-
----
-
-### ✅ v1.0.5 | 31/01/2026 20:27
-**Commit:** `370137b`
-**Tipo:** 🔧 Fix
-
-**Alterações:**
-- ❌ Remoção de comentários das aulas
-
----
-
-### ✅ v1.0.4 | 31/01/2026 20:22
-**Commit:** `a4286b3`
-**Tipo:** ⭐ Feature
-
-**Alterações:**
-- 📊 Dashboard Operacional com KPIs
-
----
-
-### ✅ v1.0.3 | 31/01/2026 20:18
-**Commit:** `6f97018`
-**Tipo:** ⭐ Feature
-
-**Alterações:**
-- 🎨 Dashboard CRM moderno
-
----
-
-### ✅ v1.0.2 | 31/01/2026 20:12
-**Commit:** `09005ce`
-**Tipo:** 🔧 Fix
-
-**Alterações:**
-- 🏠 Dashboard como página inicial
-
----
-
-### ✅ v1.0.1 | 31/01/2026 19:58
-**Commit:** `ea3a387`
-**Tipo:** 🔧 Fix
-
-**Alterações:**
-- 📄 SPA Routing Vercel
-
----
-
-### ✅ v1.0.0 | 31/01/2026 16:52
-**Commit:** `1357f78`
-**Tipo:** 🚀 Release Inicial
-
-**Alterações:**
-- Área de Membros completa
-
----
-
-## 📁 ESTRUTURA
-
-```
-pages/
-├── AdminDashboard.tsx ⚡ v1.0.8
-├── AdminChangelog.tsx ⭐ v1.0.11 (ATUAL)
-├── AdminSupport.tsx ⭐ v1.0.7
-├── StudentProfile.tsx 🔧 v1.0.10
-└── ... (13 outros)
-```
-
----
-
-## 🚀 DEPLOY
-
-| Ambiente | Status |
-|----------|--------|
-| **Vercel** | 🟢 Online |
-| **GitHub** | 🟢 Sync |
-
----
-
-**🔄 Atualizado automaticamente a cada versão.**
+**⚡ Atualizado: 31/01/2026 21:22**
