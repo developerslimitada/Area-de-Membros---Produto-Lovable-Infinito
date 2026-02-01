@@ -1,7 +1,7 @@
 # 📋 AUDITORIA CONTÍNUA - Lovable Infinito
 
-**Última Atualização:** 31/01/2026 20:45
-**Total de Versões:** 6
+**Última Atualização:** 31/01/2026 20:54
+**Total de Versões:** 8
 **Status:** 🟢 Em Produção
 
 ---
@@ -10,15 +10,53 @@
 
 | Métrica | Valor |
 |---------|-------|
-| **Versões Lançadas** | 6 |
-| **Arquivos Modificados** | 98+ |
-| **Commits Hoje** | 9 |
+| **Versões Lançadas** | 8 |
+| **Arquivos Modificados** | 102+ |
+| **Commits Hoje** | 11 |
 | **Deploy Ativo** | Vercel ✅ |
 | **URL Produção** | https://area-de-membros-produto-lovable-inf.vercel.app |
 
 ---
 
 ## 🔄 HISTÓRICO DE VERSÕES
+
+### ✅ v1.0.8 | 31/01/2026 20:54
+**Commit:** `5224e50`
+**Tipo:** ⚡ Performance
+
+**Alterações:**
+- 🚀 Dashboard carrega instantaneamente (Promise.all)
+- ⚡ 21 consultas executadas em paralelo
+- 📊 Métricas carregam simultaneamente
+- 🎨 Design simplificado e mais leve
+- 📱 Layout compacto e responsivo
+- ✨ Spinner de loading otimizado
+- 🔄 Botão "Atualizar" recarrega tudo
+
+**Otimização Técnica:**
+- Antes: ~21 chamadas sequenciais (lento)
+- Agora: 1 Promise.all com 21 chamadas paralelas (instantâneo)
+
+**Arquivos Modificados:**
+- `pages/AdminDashboard.tsx` (+245 linhas, -422 linhas) - REESCRITO
+
+---
+
+### ✅ v1.0.7 | 31/01/2026 20:49
+**Commit:** `971f5f1`
+**Tipo:** ⭐ Feature
+
+**Alterações:**
+- 📬 Dados de demonstração no Suporte
+- 👥 4 conversas de exemplo com alunos
+- 💬 Maria, João, Ana e Pedro (nomes demo)
+- 🟢/🟡 Status "Respondida" e "Aguardando"
+- ⏱️ Timestamps dinâmicos
+
+**Arquivos Modificados:**
+- `pages/AdminSupport.tsx` (+97 linhas, -14 linhas)
+
+---
 
 ### ✅ v1.0.6 | 31/01/2026 20:45
 **Commit:** `acf9ae3`
@@ -34,7 +72,6 @@
 - 📱 Layout responsivo (mobile-first)
 - ⬅️ Botão voltar em mobile
 - 🔄 Realtime updates via Supabase subscription
-- ⏱️ Tempo relativo (Agora, 5min, 2h, etc)
 
 **Arquivos Modificados:**
 - `pages/AdminSupport.tsx` (+444 linhas, -96 linhas) - REESCRITO COMPLETAMENTE
@@ -46,10 +83,9 @@
 **Tipo:** 🔧 Fix
 
 **Alterações:**
-- ❌ Removida área de comentários das aulas (StudentCourses.tsx)
+- ❌ Removida área de comentários das aulas
 - ✅ Alunos não podem mais comentar nas aulas
 - ✅ Mantido botão "Falar com Monitor" para suporte
-- ✅ Feed da comunidade ainda permite comentários (se habilitado)
 
 **Arquivos Modificados:**
 - `pages/StudentCourses.tsx` (-17 linhas)
@@ -62,12 +98,8 @@
 
 **Alterações:**
 - 📊 Dashboard Operacional com métricas reais de negócio
-- 📈 KPIs: Total Usuários, Novos Cadastros, Taxa Conclusão, Ativos Hoje
-- ⚠️ Sistema de Alertas de Gargalos (cursos sem aulas, mensagens sem resposta)
-- 📱 Distribuição por dispositivo (Android/iPhone)
-- 💬 Métricas de Suporte (usuários, admin, bot)
-- 👥 Métricas de Comunidade (posts, likes, comentários)
-- 🔄 Botão "Atualizar" para refresh em tempo real
+- 📈 KPIs: Total Usuários, Novos Cadastros, Taxa Conclusão
+- ⚠️ Sistema de Alertas de Gargalos
 
 **Arquivos Modificados:**
 - `pages/AdminDashboard.tsx` (+505 linhas, -286 linhas)
@@ -81,9 +113,6 @@
 **Alterações:**
 - 🎨 Dashboard estilo CRM moderno
 - 📊 Gráficos de linha, pizza e barras
-- 🌈 Design neon (cyan/purple/rose)
-- ⏱️ Cards de tempo (resposta/resolução)
-- 📱 Layout responsivo
 
 **Arquivos Modificados:**
 - `pages/AdminDashboard.tsx` (+311 linhas, -159 linhas)
@@ -95,9 +124,7 @@
 **Tipo:** 🔧 Fix
 
 **Alterações:**
-- 🏠 AdminDashboard agora é página inicial do /admin
-- ➕ Adicionada rota /admin/dashboard
-- 🔀 Redirecionamento corrigido
+- 🏠 AdminDashboard como página inicial do /admin
 
 **Arquivos Modificados:**
 - `App.tsx` (+2 linhas, -1 linha)
@@ -109,9 +136,8 @@
 **Tipo:** 🔧 Fix
 
 **Alterações:**
-- 📄 Adicionado vercel.json para SPA routing
+- 📄 vercel.json para SPA routing
 - ✅ Corrigido erro 404 na Vercel
-- 🔀 Rewrites configurados para React Router
 
 **Arquivos Modificados:**
 - `vercel.json` (novo arquivo)
@@ -126,11 +152,10 @@
 - 🏠 AdminDashboard completo com estatísticas
 - 📜 AdminChangelog com histórico de versões
 - 📺 Sistema VSL (Android/iPhone)
-- 💬 Sistema de Suporte (Admin + Bot + Aluno)
+- 💬 Sistema de Suporte
 - 🎯 Performance otimizada (Lazy Loading)
-- 🎨 Cross-sell de cursos e comunidade
 - 👤 Sistema de Roles (admin/student)
-- 📱 PWA configurado (manifest.json)
+- 📱 PWA configurado
 - 🔐 Proteção de rotas
 
 **Arquivos Modificados:**
@@ -144,7 +169,8 @@
 ```
 Area-de-Membros---Produto-Lovable-Infinito/
 ├── 📁 pages/ (17 arquivos)
-│   ├── AdminDashboard.tsx
+│   ├── AdminDashboard.tsx ⚡ OTIMIZADO v1.0.8
+│   ├── AdminSupport.tsx ⭐ v1.0.7
 │   ├── AdminChangelog.tsx
 │   ├── AdminCourses.tsx
 │   ├── AdminCategories.tsx
@@ -154,7 +180,6 @@ Area-de-Membros---Produto-Lovable-Infinito/
 │   ├── AdminFeed.tsx
 │   ├── AdminOffers.tsx
 │   ├── AdminCourseSidebarOffers.tsx
-│   ├── AdminSupport.tsx ⭐ ATUALIZADO v1.0.6
 │   ├── AdminVSL.tsx
 │   ├── Login.tsx
 │   ├── StudentCourses.tsx
@@ -167,7 +192,7 @@ Area-de-Membros---Produto-Lovable-Infinito/
 ├── 📁 public/ (4 arquivos)
 ├── App.tsx
 ├── vercel.json
-├── AUDIT_LOG.md ⭐ NOVO
+├── AUDIT_LOG.md
 └── package.json
 ```
 
@@ -177,15 +202,15 @@ Area-de-Membros---Produto-Lovable-Infinito/
 
 | Ambiente | Status | URL |
 |----------|--------|-----|
-| **Vercel (Produção)** | 🟢 Online | https://area-de-membros-produto-lovable-inf.vercel.app |
-| **GitHub** | 🟢 Sync | https://github.com/developerslimitada/Area-de-Membros---Produto-Lovable-Infinito |
+| **Vercel** | 🟢 Online | https://area-de-membros-produto-lovable-inf.vercel.app |
+| **GitHub** | 🟢 Sync | github.com/developerslimitada/Area-de-Membros---Produto-Lovable-Infinito |
 | **Localhost** | 🟢 Running | http://localhost:3000 |
 
 ---
 
-## 📝 PRÓXIMAS ATUALIZAÇÕES PLANEJADAS
+## 📝 PRÓXIMAS ATUALIZAÇÕES
 
-- [ ] PWA Mobile-First (install UX, safe areas)
+- [ ] PWA Mobile-First
 - [ ] Integração N8N
 - [ ] Lighthouse > 90
 - [ ] Testes automatizados
