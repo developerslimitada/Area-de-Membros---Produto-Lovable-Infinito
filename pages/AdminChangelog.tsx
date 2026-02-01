@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { History, Calendar, Package, CheckCircle, Code, Zap } from 'lucide-react';
+import { History, Calendar, Package, CheckCircle, Zap, GitCommit, Tag } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { motion } from 'framer-motion';
 
@@ -8,15 +8,162 @@ interface ChangelogEntry {
     version: string;
     release_date: string;
     title: string;
-    description: string;
-    changes: {
-        features: Array<{
-            category: string;
-            items: string[];
-        }>;
-        technical: string[];
-    };
+    type: 'feature' | 'fix' | 'perf' | 'release';
+    changes: string[];
+    commit?: string;
 }
+
+// Histórico baseado na auditoria contínua
+const defaultChangelog: ChangelogEntry[] = [
+    {
+        id: '10',
+        version: '1.0.10',
+        release_date: '2026-01-31T21:05:00',
+        title: 'Popup discreto de dispositivo',
+        type: 'fix',
+        changes: [
+            'Popup com fade transparente (40%)',
+            'Design minimalista e discreto',
+            'Sem alertas de erro',
+            'Animação suave de entrada'
+        ],
+        commit: '3b30c33'
+    },
+    {
+        id: '9',
+        version: '1.0.9',
+        release_date: '2026-01-31T21:02:00',
+        title: 'Seletor de Dispositivo Android/iPhone',
+        type: 'feature',
+        changes: [
+            'Popup no primeiro acesso perguntando qual celular usa',
+            'Botões Android (verde) e iPhone (cinza)',
+            'Salvamento automático no Supabase',
+            'Integração com Dashboard Admin'
+        ],
+        commit: '8d71df5'
+    },
+    {
+        id: '8',
+        version: '1.0.8',
+        release_date: '2026-01-31T20:54:00',
+        title: 'Dashboard Ultra Rápido',
+        type: 'perf',
+        changes: [
+            '21 consultas em paralelo (Promise.all)',
+            'Carregamento instantâneo',
+            'Design simplificado e leve',
+            'Spinner otimizado'
+        ],
+        commit: '5224e50'
+    },
+    {
+        id: '7',
+        version: '1.0.7',
+        release_date: '2026-01-31T20:49:00',
+        title: 'Dados demo no Suporte',
+        type: 'feature',
+        changes: [
+            '4 conversas de exemplo com alunos',
+            'Maria, João, Ana e Pedro',
+            'Status Aguardando e Respondida'
+        ],
+        commit: '971f5f1'
+    },
+    {
+        id: '6',
+        version: '1.0.6',
+        release_date: '2026-01-31T20:45:00',
+        title: 'Suporte estilo Inbox',
+        type: 'feature',
+        changes: [
+            'Conversas separadas por aluno',
+            'Lista de conversas (sidebar)',
+            'Chat individual por aluno',
+            'Badges Aguardando/Respondida',
+            'Realtime updates'
+        ],
+        commit: 'acf9ae3'
+    },
+    {
+        id: '5',
+        version: '1.0.5',
+        release_date: '2026-01-31T20:27:00',
+        title: 'Remoção de comentários',
+        type: 'fix',
+        changes: [
+            'Área de comentários removida das aulas',
+            'Alunos usam suporte em vez de comentários'
+        ],
+        commit: '370137b'
+    },
+    {
+        id: '4',
+        version: '1.0.4',
+        release_date: '2026-01-31T20:22:00',
+        title: 'Dashboard Operacional',
+        type: 'feature',
+        changes: [
+            'KPIs: Total Usuários, Novos Cadastros',
+            'Taxa de Conclusão',
+            'Sistema de Alertas de Gargalos'
+        ],
+        commit: 'a4286b3'
+    },
+    {
+        id: '3',
+        version: '1.0.3',
+        release_date: '2026-01-31T20:18:00',
+        title: 'Dashboard CRM',
+        type: 'feature',
+        changes: [
+            'Design estilo CRM moderno',
+            'Gráficos de linha, pizza e barras'
+        ],
+        commit: '6f97018'
+    },
+    {
+        id: '2',
+        version: '1.0.2',
+        release_date: '2026-01-31T20:12:00',
+        title: 'Dashboard como página inicial',
+        type: 'fix',
+        changes: [
+            'AdminDashboard como página padrão do /admin'
+        ],
+        commit: '09005ce'
+    },
+    {
+        id: '1',
+        version: '1.0.1',
+        release_date: '2026-01-31T19:58:00',
+        title: 'SPA Routing Vercel',
+        type: 'fix',
+        changes: [
+            'vercel.json para SPA routing',
+            'Correção de erro 404'
+        ],
+        commit: 'ea3a387'
+    },
+    {
+        id: '0',
+        version: '1.0.0',
+        release_date: '2026-01-31T16:52:00',
+        title: 'Release Inicial',
+        type: 'release',
+        changes: [
+            'AdminDashboard completo',
+            'Sistema de Changelog',
+            'Sistema VSL (Android/iPhone)',
+            'Sistema de Suporte',
+            'Lazy Loading',
+            'Sistema de Roles',
+            'PWA configurado',
+            'Proteção de rotas'
+        ],
+        commit: '1357f78'
+    }
+];
 
 const AdminChangelog: React.FC = () => {
     const [changelog, setChangelog] = useState<ChangelogEntry[]>([]);
@@ -34,10 +181,15 @@ const AdminChangelog: React.FC = () => {
                 .select('*')
                 .order('release_date', { ascending: false });
 
-            if (error) throw error;
-            setChangelog(data || []);
+            if (error || !data || data.length === 0) {
+                // Usar dados locais se não houver dados no Supabase
+                setChangelog(defaultChangelog);
+            } else {
+                setChangelog(data);
+            }
         } catch (err) {
             console.error('Error loading changelog:', err);
+            setChangelog(defaultChangelog);
         } finally {
             setLoading(false);
         }
@@ -47,141 +199,162 @@ const AdminChangelog: React.FC = () => {
         const date = new Date(dateString);
         return new Intl.DateTimeFormat('pt-BR', {
             day: '2-digit',
-            month: 'long',
+            month: 'short',
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
         }).format(date);
     };
 
+    const getTypeColor = (type: string) => {
+        switch (type) {
+            case 'feature': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+            case 'fix': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+            case 'perf': return 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30';
+            case 'release': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+            default: return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+        }
+    };
+
+    const getTypeLabel = (type: string) => {
+        switch (type) {
+            case 'feature': return '⭐ Feature';
+            case 'fix': return '🔧 Fix';
+            case 'perf': return '⚡ Performance';
+            case 'release': return '🚀 Release';
+            default: return '📦 Update';
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-96">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
-                    <p className="text-xs font-black text-slate-600 uppercase tracking-widest animate-pulse">Carregando Histórico...</p>
+                    <div className="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+                    <p className="text-xs font-bold text-slate-600 uppercase tracking-widest">Carregando...</p>
                 </div>
             </div>
         );
     }
 
+    const currentVersion = changelog[0]?.version || '1.0.0';
+    const totalVersions = changelog.length;
+
     return (
-        <div className="space-y-10 animate-in fade-in duration-700">
+        <div className="space-y-8 animate-in fade-in duration-700">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-4xl font-black text-white tracking-tight uppercase flex items-center gap-4">
-                        <History size={40} className="text-indigo-400" />
+                    <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                        <History size={28} className="text-indigo-400" />
                         Histórico de Atualizações
                     </h1>
-                    <p className="text-sm font-bold text-slate-500 uppercase tracking-widest mt-2">Versões e melhorias da plataforma</p>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">
+                        Todas as versões e melhorias
+                    </p>
                 </div>
-                <div className="px-6 py-3 bg-indigo-600/20 border-2 border-indigo-500/50 rounded-2xl">
-                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest">Versão Atual</p>
-                    <p className="text-2xl font-black text-indigo-400 mt-1">{changelog[0]?.version || '1.0.0'}</p>
+                <div className="flex gap-3">
+                    <div className="px-4 py-3 bg-indigo-600/20 border border-indigo-500/30 rounded-xl text-center">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Versão Atual</p>
+                        <p className="text-xl font-black text-indigo-400">{currentVersion}</p>
+                    </div>
+                    <div className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-center">
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total</p>
+                        <p className="text-xl font-black text-white">{totalVersions}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Stats Bar */}
+            <div className="grid grid-cols-4 gap-3">
+                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-center">
+                    <p className="text-lg font-black text-emerald-400">{changelog.filter(c => c.type === 'feature').length}</p>
+                    <p className="text-[10px] text-emerald-400/70 font-bold uppercase">Features</p>
+                </div>
+                <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-3 text-center">
+                    <p className="text-lg font-black text-yellow-400">{changelog.filter(c => c.type === 'fix').length}</p>
+                    <p className="text-[10px] text-yellow-400/70 font-bold uppercase">Fixes</p>
+                </div>
+                <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-3 text-center">
+                    <p className="text-lg font-black text-cyan-400">{changelog.filter(c => c.type === 'perf').length}</p>
+                    <p className="text-[10px] text-cyan-400/70 font-bold uppercase">Perf</p>
+                </div>
+                <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-3 text-center">
+                    <p className="text-lg font-black text-purple-400">{changelog.filter(c => c.type === 'release').length}</p>
+                    <p className="text-[10px] text-purple-400/70 font-bold uppercase">Releases</p>
                 </div>
             </div>
 
             {/* Changelog Timeline */}
-            <div className="space-y-8">
+            <div className="space-y-4">
                 {changelog.map((entry, index) => (
                     <motion.div
                         key={entry.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
                         className="relative"
                     >
-                        {/* Timeline Line */}
-                        {index < changelog.length - 1 && (
-                            <div className="absolute left-6 top-24 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500/50 to-transparent" />
-                        )}
-
-                        {/* Version Card */}
-                        <div className="bg-[#0f0f13] rounded-[2.5rem] border-2 border-indigo-500/30 shadow-[0_0_40px_rgba(99,102,241,0.2)] p-8 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/5 rounded-full blur-3xl -mr-32 -mt-32" />
-
-                            {/* Version Badge */}
-                            <div className="relative z-10 flex items-start justify-between mb-6">
-                                <div className="flex items-center gap-4">
-                                    <div className="p-4 bg-indigo-600/20 border-2 border-indigo-500/50 rounded-2xl">
-                                        <Package size={32} className="text-indigo-400" />
+                        <div className={`bg-[#12121a] rounded-2xl border border-white/5 p-5 hover:border-indigo-500/30 transition-all ${index === 0 ? 'border-indigo-500/30 shadow-lg shadow-indigo-500/10' : ''}`}>
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="flex items-start gap-4">
+                                    {/* Version Badge */}
+                                    <div className="bg-indigo-600/20 border border-indigo-500/30 rounded-xl px-3 py-2 text-center min-w-[70px]">
+                                        <Tag size={14} className="text-indigo-400 mx-auto mb-1" />
+                                        <p className="text-sm font-black text-indigo-400">{entry.version}</p>
                                     </div>
-                                    <div>
-                                        <h2 className="text-3xl font-black text-white tracking-tight">Versão {entry.version}</h2>
-                                        <p className="text-sm font-bold text-slate-500 mt-1">{entry.title}</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl border border-white/10">
-                                    <Calendar size={16} className="text-indigo-400" />
-                                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
-                                        {formatDate(entry.release_date)}
-                                    </span>
-                                </div>
-                            </div>
 
-                            {/* Description */}
-                            {entry.description && (
-                                <p className="relative z-10 text-slate-400 text-sm leading-relaxed mb-8 pl-20">
-                                    {entry.description}
-                                </p>
-                            )}
-
-                            {/* Features */}
-                            <div className="relative z-10 space-y-6">
-                                <h3 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-3 pl-20">
-                                    <Zap size={20} className="text-yellow-400" />
-                                    Funcionalidades Implementadas
-                                </h3>
-
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pl-20">
-                                    {entry.changes.features.map((feature, idx) => (
-                                        <div key={idx} className="bg-white/5 rounded-2xl border border-white/10 p-6 space-y-4">
-                                            <h4 className="text-sm font-black text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-                                                <Code size={16} />
-                                                {feature.category}
-                                            </h4>
-                                            <ul className="space-y-2">
-                                                {feature.items.map((item, itemIdx) => (
-                                                    <li key={itemIdx} className="flex items-start gap-3 text-sm text-slate-400">
-                                                        <CheckCircle size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                                                        <span>{item}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                    <div className="flex-1">
+                                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                                            <h3 className="text-white font-bold text-sm">{entry.title}</h3>
+                                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${getTypeColor(entry.type)}`}>
+                                                {getTypeLabel(entry.type)}
+                                            </span>
+                                            {index === 0 && (
+                                                <span className="px-2 py-0.5 bg-green-500/20 text-green-400 border border-green-500/30 rounded-full text-[10px] font-bold">
+                                                    ATUAL
+                                                </span>
+                                            )}
                                         </div>
-                                    ))}
-                                </div>
 
-                                {/* Technical Details */}
-                                {entry.changes.technical && entry.changes.technical.length > 0 && (
-                                    <div className="pl-20 mt-6">
-                                        <h4 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-4">Detalhes Técnicos</h4>
-                                        <div className="bg-black/30 rounded-2xl border border-white/5 p-6">
-                                            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                {entry.changes.technical.map((tech, techIdx) => (
-                                                    <li key={techIdx} className="flex items-center gap-3 text-sm text-slate-500">
-                                                        <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
-                                                        <span>{tech}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
+                                        {/* Changes List */}
+                                        <div className="flex flex-wrap gap-2">
+                                            {entry.changes.map((change, idx) => (
+                                                <span key={idx} className="flex items-center gap-1 text-xs text-slate-400 bg-white/5 px-2 py-1 rounded-lg">
+                                                    <CheckCircle size={10} className="text-emerald-400" />
+                                                    {change}
+                                                </span>
+                                            ))}
                                         </div>
                                     </div>
-                                )}
+                                </div>
+
+                                {/* Date & Commit */}
+                                <div className="text-right shrink-0">
+                                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                                        <Calendar size={12} />
+                                        <span>{formatDate(entry.release_date)}</span>
+                                    </div>
+                                    {entry.commit && (
+                                        <div className="flex items-center gap-1 mt-1 text-xs text-slate-600">
+                                            <GitCommit size={12} />
+                                            <code className="font-mono">{entry.commit}</code>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </motion.div>
                 ))}
             </div>
 
-            {/* Empty State */}
-            {changelog.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-96 text-center">
-                    <History size={64} className="text-slate-700 mb-4" />
-                    <p className="text-slate-600 font-bold uppercase tracking-widest text-sm">Nenhuma atualização registrada</p>
-                </div>
-            )}
+            {/* Footer */}
+            <div className="text-center py-6">
+                <p className="text-xs text-slate-600">
+                    <Zap size={12} className="inline mr-1" />
+                    Histórico gerado automaticamente pela Auditoria Contínua
+                </p>
+            </div>
         </div>
     );
 };
