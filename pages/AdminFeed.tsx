@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, Zap, Image as ImageIcon, UploadCloud, X, LayoutGri
 import { getDB, createPost, updatePost, deletePost } from '../supabaseStore';
 import { Post } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 
 const AdminFeed: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -21,9 +22,31 @@ const AdminFeed: React.FC = () => {
   });
 
   useEffect(() => {
-    const db = getDB();
-    setPosts(db.posts);
+    fetchPosts();
   }, []);
+
+  const fetchPosts = async () => {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*, profiles(*)')
+      .order('created_at', { ascending: false });
+
+    if (data) {
+      setPosts(data.map(p => ({
+        id: p.id,
+        userId: p.user_id || '',
+        userName: (p as any).profiles?.name || 'Usuário',
+        userAvatar: (p as any).profiles?.avatar || '',
+        title: p.title || undefined,
+        content: p.content,
+        imageUrl: p.image_url || undefined,
+        likesCount: p.likes_count || 0,
+        allowComments: (p as any).allow_comments ?? true,
+        status: (p.status as any) || 'published',
+        createdAt: p.created_at || new Date().toISOString()
+      })));
+    }
+  };
 
   const openModal = (post?: Post) => {
     if (post) {
@@ -42,7 +65,7 @@ const AdminFeed: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -52,12 +75,28 @@ const AdminFeed: React.FC = () => {
     }
 
     setIsUploading(true);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData(prev => ({ ...prev, imageUrl: reader.result as string }));
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `post_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('materials')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('materials')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, imageUrl: data.publicUrl }));
+    } catch (err) {
+      console.error('Error uploading image:', err);
+      alert('Erro ao carregar imagem.');
+    } finally {
       setIsUploading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleSave = async () => {

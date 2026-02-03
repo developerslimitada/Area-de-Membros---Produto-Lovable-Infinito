@@ -29,18 +29,62 @@ const AdminLessons: React.FC = () => {
   });
 
   useEffect(() => {
-    const db = getDB();
-    setCourses(db.courses);
-    if (db.courses.length > 0) setSelectedCourseId(db.courses[0].id);
+    fetchInitialData();
   }, []);
+
+  const fetchInitialData = async () => {
+    const { data: coursesData } = await supabase
+      .from('courses')
+      .select('*')
+      .order('title');
+
+    if (coursesData) {
+      const mappedCourses = coursesData.map(c => ({
+        id: c.id,
+        categoryId: c.category_id || '',
+        title: c.title,
+        description: c.description || '',
+        coverUrl: c.cover_url || '',
+        coverPosition: (c.cover_position as any) || 'center',
+        isFeatured: c.is_featured || false,
+        createdBy: c.created_by || ''
+      }));
+      setCourses(mappedCourses);
+      if (mappedCourses.length > 0) {
+        setSelectedCourseId(mappedCourses[0].id);
+      }
+    }
+  };
+
+  const fetchModules = async (courseId: string) => {
+    const { data: modulesData } = await supabase
+      .from('modules')
+      .select('*')
+      .eq('course_id', courseId)
+      .order('order_number');
+
+    if (modulesData) {
+      const mappedModules = modulesData.map(m => ({
+        id: m.id,
+        courseId: m.course_id,
+        title: m.title,
+        description: m.description || '',
+        orderNumber: m.order_number || 0,
+        coverUrl: m.cover_url || '',
+        coverPosition: (m.cover_position as any) || 'center'
+      }));
+      setModules(mappedModules);
+      if (mappedModules.length > 0) {
+        setSelectedModuleId(mappedModules[0].id);
+      } else {
+        setSelectedModuleId('');
+      }
+    }
+  };
 
   useEffect(() => {
     if (selectedCourseId) {
-      const db = getDB();
-      const courseModules = db.modules.filter(m => m.courseId === selectedCourseId);
-      setModules(courseModules);
-      if (courseModules.length > 0) setSelectedModuleId(courseModules[0].id);
-      else setSelectedModuleId('');
+      fetchModules(selectedCourseId);
     }
   }, [selectedCourseId]);
 

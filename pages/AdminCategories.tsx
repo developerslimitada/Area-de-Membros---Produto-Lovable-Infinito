@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, Grid, X, ArrowUpDown } from 'lucide-react';
 import { getDB, saveDB } from '../supabaseStore';
 import { Category } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 
 const AdminCategories: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -15,10 +16,40 @@ const AdminCategories: React.FC = () => {
     order: 1
   });
 
+  const [courseCounts, setCourseCounts] = useState<Record<string, number>>({});
+
   useEffect(() => {
-    const db = getDB();
-    setCategories(db.categories || []);
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    const { data: catData, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('display_order');
+
+    if (catData) {
+      setCategories(catData.map(c => ({
+        id: c.id,
+        name: c.name,
+        order: c.display_order || 0
+      })));
+    }
+
+    const { data: coursesData } = await supabase
+      .from('courses')
+      .select('category_id');
+
+    if (coursesData) {
+      const counts: Record<string, number> = {};
+      coursesData.forEach(c => {
+        if (c.category_id) {
+          counts[c.category_id] = (counts[c.category_id] || 0) + 1;
+        }
+      });
+      setCourseCounts(counts);
+    }
+  };
 
   const openModal = (category?: Category) => {
     if (category) {
@@ -34,48 +65,64 @@ const AdminCategories: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.name) {
       alert("Nome da categoria é obrigatório.");
       return;
     }
 
-    const db = getDB();
-    if (!db.categories) db.categories = [];
-
-    const newCategory: Category = {
-      id: editingCategory ? editingCategory.id : Math.random().toString(36).substr(2, 9),
-      name: formData.name || '',
-      order: Number(formData.order) || 1
+    const categoryData = {
+      name: formData.name,
+      display_order: Number(formData.order) || 0,
+      is_active: true
     };
 
-    if (editingCategory) {
-      db.categories = db.categories.map(c => c.id === editingCategory.id ? newCategory : c);
-    } else {
-      db.categories.push(newCategory);
+    try {
+      if (editingCategory) {
+        const { error } = await supabase
+          .from('categories')
+          .update(categoryData)
+          .eq('id', editingCategory.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('categories')
+          .insert(categoryData);
+        if (error) throw error;
+      }
+
+      await fetchCategories();
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error('Error saving category:', err);
+      alert('Erro ao salvar categoria.');
     }
-
-    // Sort categories by order after change
-    db.categories.sort((a, b) => a.order - b.order);
-
-    saveDB(db);
-    setCategories(db.categories);
-    setIsModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    const db = getDB();
-    const coursesInCategory = db.courses.filter(c => c.categoryId === id);
+  const handleDelete = async (id: string) => {
+    // Check for linked courses first
+    const { count, error: countError } = await supabase
+      .from('courses')
+      .select('*', { count: 'exact', head: true })
+      .eq('category_id', id);
 
-    if (coursesInCategory.length > 0) {
-      alert(`Não é possível excluir esta categoria pois existem ${coursesInCategory.length} cursos vinculados a ela.`);
+    if (count && count > 0) {
+      alert(`Não é possível excluir esta categoria pois existem ${count} cursos vinculados a ela.`);
       return;
     }
 
     if (window.confirm('Excluir esta categoria permanentemente?')) {
-      db.categories = db.categories.filter(c => c.id !== id);
-      saveDB(db);
-      setCategories(db.categories);
+      try {
+        const { error } = await supabase
+          .from('categories')
+          .delete()
+          .eq('id', id);
+        if (error) throw error;
+        await fetchCategories();
+      } catch (err) {
+        console.error('Error deleting category:', err);
+        alert('Erro ao excluir categoria.');
+      }
     }
   };
 
@@ -108,7 +155,7 @@ const AdminCategories: React.FC = () => {
             </thead>
             <tbody className="divide-y divide-white/5">
               {categories.sort((a, b) => a.order - b.order).map(category => {
-                const courseCount = getDB().courses.filter(c => c.categoryId === category.id).length;
+                const courseCount = courseCounts[category.id] || 0;
                 return (
                   <tr key={category.id} className="hover:bg-white/5 transition-colors group">
                     <td className="px-8 py-6">

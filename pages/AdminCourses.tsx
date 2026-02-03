@@ -70,22 +70,38 @@ const AdminCourses: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Arquivo muito grande! O limite é 5MB.");
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Arquivo muito grande! O limite é 2MB.");
       return;
     }
 
     setIsUploading(true);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData(prev => ({ ...prev, coverUrl: reader.result as string }));
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `course_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('materials') // Using materials bucket as a general storage for now
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('materials')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, coverUrl: data.publicUrl }));
+    } catch (err) {
+      console.error('Error uploading image:', err);
+      alert('Erro ao carregar imagem.');
+    } finally {
       setIsUploading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleSave = async () => {
@@ -96,6 +112,13 @@ const AdminCourses: React.FC = () => {
 
     setIsUploading(true);
 
+    const user = (await supabase.auth.getUser()).data.user;
+    if (!user) {
+      alert("Usuário não autenticado.");
+      setIsUploading(false);
+      return;
+    }
+
     const courseData = {
       title: formData.title,
       description: formData.description,
@@ -103,7 +126,7 @@ const AdminCourses: React.FC = () => {
       cover_position: formData.coverPosition,
       category_id: formData.categoryId || null,
       is_featured: formData.isFeatured,
-      created_by: '1' // Fallback or use auth user id
+      created_by: user.id
     };
 
     try {

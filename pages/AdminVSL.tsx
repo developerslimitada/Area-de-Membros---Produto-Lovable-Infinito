@@ -303,7 +303,7 @@ const AdminVSL: React.FC = () => {
                         )}
                     </div>
 
-                    {settings.video_url ? (
+                    {(settings.selected_device === 'android' ? settings.android_video_url : settings.iphone_video_url) ? (
                         <div className="aspect-video rounded-3xl overflow-hidden bg-black/50 border border-white/5">
                             {settings.video_type === 'youtube' ? (
                                 <iframe
@@ -314,7 +314,7 @@ const AdminVSL: React.FC = () => {
                                 />
                             ) : (
                                 <video
-                                    src={settings.video_url}
+                                    src={settings.selected_device === 'android' ? settings.android_video_url : settings.iphone_video_url}
                                     controls
                                     autoPlay={settings.autoplay}
                                     muted={settings.muted}

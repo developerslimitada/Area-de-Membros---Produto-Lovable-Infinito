@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, Search, ChevronDown, X, Image as ImageIcon, Upload
 import { getDB, saveDB } from '../supabaseStore';
 import { Course, Module } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '../lib/supabase';
 
 const AdminModules: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -22,19 +23,57 @@ const AdminModules: React.FC = () => {
     coverPosition: 'center'
   });
 
-  useEffect(() => {
-    const db = getDB();
-    setCourses(db.courses);
-    if (db.courses.length > 0) {
-      setSelectedCourseId(db.courses[0].id);
+  const fetchData = async () => {
+    const { data: coursesData } = await supabase
+      .from('courses')
+      .select('*')
+      .order('title');
+
+    if (coursesData) {
+      setCourses(coursesData.map(c => ({
+        id: c.id,
+        categoryId: c.category_id || '',
+        title: c.title,
+        description: c.description || '',
+        coverUrl: c.cover_url || '',
+        coverPosition: (c.cover_position as any) || 'center',
+        isFeatured: c.is_featured || false,
+        createdBy: c.created_by || ''
+      })));
+      if (coursesData.length > 0 && !selectedCourseId) {
+        setSelectedCourseId(coursesData[0].id);
+      }
     }
+  };
+
+  const fetchModules = async () => {
+    if (selectedCourseId) {
+      const { data: modulesData } = await supabase
+        .from('modules')
+        .select('*')
+        .eq('course_id', selectedCourseId)
+        .order('order_number');
+
+      if (modulesData) {
+        setModules(modulesData.map(m => ({
+          id: m.id,
+          courseId: m.course_id,
+          title: m.title,
+          description: m.description || '',
+          orderNumber: m.order_number || 0,
+          coverUrl: m.cover_url || '',
+          coverPosition: (m.cover_position as any) || 'center'
+        })));
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
   }, []);
 
   useEffect(() => {
-    if (selectedCourseId) {
-      const db = getDB();
-      setModules(db.modules.filter(m => m.courseId === selectedCourseId).sort((a, b) => a.orderNumber - b.orderNumber));
-    }
+    fetchModules();
   }, [selectedCourseId]);
 
   const openModal = (mod?: Module) => {
@@ -54,57 +93,93 @@ const AdminModules: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Arquivo muito grande! O limite é 5MB.");
+    if (file.size > 2 * 1024 * 1024) {
+      alert("Arquivo muito grande! O limite é 2MB.");
       return;
     }
 
     setIsUploading(true);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setFormData(prev => ({ ...prev, coverUrl: reader.result as string }));
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `module_${Math.random().toString(36).substring(2)}_${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('materials')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage
+        .from('materials')
+        .getPublicUrl(filePath);
+
+      setFormData(prev => ({ ...prev, coverUrl: data.publicUrl }));
+    } catch (err) {
+      console.error('Error uploading image:', err);
+      alert('Erro ao carregar imagem.');
+    } finally {
       setIsUploading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.title) {
       alert("Título obrigatório.");
       return;
     }
 
-    const db = getDB();
-    if (editingModule) {
-      db.modules = db.modules.map(m => m.id === editingModule.id ? { ...m, ...formData } as Module : m);
-    } else {
-      const newModule: Module = {
-        id: Math.random().toString(36).substr(2, 9),
-        courseId: selectedCourseId,
-        title: formData.title || 'Novo Módulo',
-        description: formData.description || '',
-        orderNumber: formData.orderNumber || 1,
-        coverUrl: formData.coverUrl || '',
-        coverPosition: formData.coverPosition || 'center'
+    setIsUploading(true);
+    try {
+      const moduleData = {
+        course_id: selectedCourseId,
+        title: formData.title,
+        description: formData.description,
+        order_number: formData.orderNumber,
+        cover_url: formData.coverUrl,
+        cover_position: formData.coverPosition
       };
-      db.modules.push(newModule);
+
+      if (editingModule) {
+        const { error } = await supabase
+          .from('modules')
+          .update(moduleData)
+          .eq('id', editingModule.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('modules')
+          .insert(moduleData);
+        if (error) throw error;
+      }
+
+      await fetchModules();
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error('Error saving module:', err);
+      alert('Erro ao salvar módulo.');
+    } finally {
+      setIsUploading(false);
     }
-    saveDB(db);
-    setModules(db.modules.filter(m => m.courseId === selectedCourseId).sort((a, b) => a.orderNumber - b.orderNumber));
-    setIsModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Excluir este módulo?')) {
-      const db = getDB();
-      db.modules = db.modules.filter(m => m.id !== id);
-      db.lessons = db.lessons.filter(l => l.moduleId !== id);
-      saveDB(db);
-      setModules(db.modules.filter(m => m.courseId === selectedCourseId).sort((a, b) => a.orderNumber - b.orderNumber));
+      try {
+        const { error } = await supabase
+          .from('modules')
+          .delete()
+          .eq('id', id);
+        if (error) throw error;
+        await fetchModules();
+      } catch (err) {
+        console.error('Error deleting module:', err);
+        alert('Erro ao excluir módulo.');
+      }
     }
   };
 
