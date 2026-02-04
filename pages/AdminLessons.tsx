@@ -338,6 +338,36 @@ const AdminLessons: React.FC = () => {
               <div className="p-8 space-y-8 overflow-y-auto no-scrollbar">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest ml-1">Curso Alvo</label>
+                    <div className="relative">
+                      <select
+                        value={selectedCourseId}
+                        onChange={(e) => setSelectedCourseId(e.target.value)}
+                        className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 outline-none appearance-none focus:ring-2 focus:ring-indigo-500/50 focus:bg-white/10 transition-all text-sm font-bold text-white"
+                      >
+                        {courses.map(c => <option key={c.id} value={c.id} className="bg-[#0f0f13]">{c.title}</option>)}
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={18} />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest ml-1">Módulo Alvo</label>
+                    <div className="relative">
+                      <select
+                        value={selectedModuleId}
+                        onChange={(e) => setSelectedModuleId(e.target.value)}
+                        className="w-full bg-white/5 border border-white/5 rounded-2xl px-6 py-4 outline-none appearance-none focus:ring-2 focus:ring-indigo-500/50 focus:bg-white/10 transition-all text-sm font-bold text-white"
+                      >
+                        <option value="" className="bg-[#0f0f13]">Selecione um módulo</option>
+                        {modules.map(m => <option key={m.id} value={m.id} className="bg-[#0f0f13]">{m.title}</option>)}
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" size={18} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-600 uppercase tracking-widest ml-1">Título da Aula</label>
                     <input
                       type="text"
