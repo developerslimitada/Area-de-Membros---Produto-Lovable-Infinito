@@ -1028,9 +1028,9 @@ const StudentCourses: React.FC = () => {
                         </div>
 
                         <div className="pt-6 md:pt-8 border-t border-white/5">
-                          <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Suporte ao Aluno</h4>
-                          <button className="w-full py-3 md:py-4 bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white transition-all border border-indigo-500/20 rounded-xl md:rounded-2xl font-black text-[10px] uppercase tracking-widest active:scale-95">
-                            Falar com Monitor
+                          <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Comunidade</h4>
+                          <button className="w-full py-3 md:py-4 bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 rounded-xl md:rounded-2xl font-black text-[10px] uppercase tracking-widest cursor-not-allowed opacity-80">
+                            Quero participar da maior comunidade de Lovable do Brasil
                           </button>
                         </div>
                       </div>

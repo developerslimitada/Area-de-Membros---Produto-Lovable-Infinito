@@ -1,7 +1,7 @@
 # 📋 AUDITORIA CONTÍNUA - Lovable Infinito
 
-**Última Atualização:** 04/02/2026 00:32
-**Total de Versões:** 21
+**Última Atualização:** 04/02/2026 00:41
+**Total de Versões:** 22
 **Status:** 🟢 Em Produção
 
 ---
@@ -10,9 +10,9 @@
 
 | Métrica | Valor |
 |---------|-------|
-| **Versões** | 21 |
+| **Versões** | 22 |
 | **Features** | 10 |
-| **Fixes** | 8 |
+| **Fixes** | 9 |
 | **Performance** | 1 |
 | **Releases** | 1 |
 
@@ -22,7 +22,8 @@
 
 | # | Versão | Nome | Keywords | Tipo |
 |---|--------|------|----------|------|
-| 21 | **1.0.20** | Cinematic Player Fix | `YouTube` `Shorts` `Automático` | 🔧 Fix |
+| 22 | **1.0.21** | Community Invite | `CTA` `UX` `Mock` | 🔧 Fix |
+| 21 | 1.0.20 | Cinematic Player Fix | `YouTube` `Shorts` `Automático` | 🔧 Fix |
 | 20 | 1.0.19 | Smart Lesson Preview | `YouTube` `Fix` `Admin` | 🔧 Fix |
 | 19 | 1.0.18 | Formulários Inteligentes | `Select` `Admin` `UX` | ⭐ Feature |
 | 18 | 1.0.17 | Admin Persistence | `Supabase` `CRUD` `Persistence` | ⭐ Feature |
@@ -57,4 +58,4 @@ A cada nova versão, atualizar:
 
 ---
 
-**⚡ Atualizado: 04/02/2026 00:32**
+**⚡ Atualizado: 04/02/2026 00:41**

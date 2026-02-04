@@ -11,6 +11,7 @@ interface Version {
 
 // Histórico de versões baseado na auditoria contínua
 const versions: Version[] = [
+    { version: '1.0.21', name: 'Community Invite', keywords: ['CTA', 'UX', 'Mock'], type: 'fix' },
     { version: '1.0.20', name: 'Cinematic Player Fix', keywords: ['YouTube', 'Shorts', 'Automático'], type: 'fix' },
     { version: '1.0.19', name: 'Smart Lesson Preview', keywords: ['YouTube', 'Fix', 'Admin'], type: 'fix' },
     { version: '1.0.18', name: 'Formulários Inteligentes', keywords: ['Select', 'Admin', 'UX'], type: 'feature' },
