@@ -11,7 +11,7 @@ interface PandaPlayerProps {
 const PandaPlayer: React.FC<PandaPlayerProps> = ({ videoUrl, videoType, title }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(1);
@@ -85,8 +85,8 @@ const PandaPlayer: React.FC<PandaPlayerProps> = ({ videoUrl, videoType, title })
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
-      
-      switch(e.key.toLowerCase()) {
+
+      switch (e.key.toLowerCase()) {
         case ' ':
           e.preventDefault();
           togglePlay();
@@ -111,11 +111,22 @@ const PandaPlayer: React.FC<PandaPlayerProps> = ({ videoUrl, videoType, title })
   }, [isPlaying, isMuted]);
 
   if (videoType === 'youtube') {
+    // Helper to extract YouTube ID if a full URL was passed
+    const getYoutubeId = (url: string) => {
+      if (!url) return '';
+      if (url.length === 11) return url;
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : url;
+    };
+
+    const videoId = getYoutubeId(videoUrl);
+
     return (
       <div className="w-full aspect-video rounded-[2rem] overflow-hidden bg-black shadow-2xl border border-white/5">
         <iframe
           className="w-full h-full"
-          src={`https://www.youtube.com/embed/${videoUrl}?modestbranding=1&rel=0&iv_load_policy=3&color=white`}
+          src={`https://www.youtube.com/embed/${videoId}?modestbranding=1&rel=0&iv_load_policy=3&color=white`}
           title={title || "Video Player"}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
@@ -139,7 +150,7 @@ const PandaPlayer: React.FC<PandaPlayerProps> = ({ videoUrl, videoType, title })
   }
 
   return (
-    <div 
+    <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
       className="relative w-full aspect-video rounded-[2rem] overflow-hidden bg-black group select-none shadow-2xl border border-white/5"
@@ -158,7 +169,7 @@ const PandaPlayer: React.FC<PandaPlayerProps> = ({ videoUrl, videoType, title })
 
       {/* Center Play Button Overlay */}
       {!isPlaying && (
-        <div 
+        <div
           onClick={togglePlay}
           className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[2px] cursor-pointer group-hover:bg-black/40 transition-all"
         >
@@ -180,7 +191,7 @@ const PandaPlayer: React.FC<PandaPlayerProps> = ({ videoUrl, videoType, title })
             onChange={handleSeek}
             className="absolute inset-0 w-full h-full appearance-none bg-white/20 rounded-full cursor-pointer accent-[#ff6b6b] group-hover/progress:h-2 transition-all"
           />
-          <div 
+          <div
             className="absolute top-0 left-0 h-full bg-[#ff6b6b] rounded-full pointer-events-none shadow-[0_0_10px_rgba(255,107,107,0.8)]"
             style={{ width: `${progress}%` }}
           />
@@ -223,7 +234,7 @@ const PandaPlayer: React.FC<PandaPlayerProps> = ({ videoUrl, videoType, title })
               </button>
               <div className="absolute bottom-full right-0 mb-4 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl p-2 opacity-0 group-hover/speed:opacity-100 pointer-events-none group-hover/speed:pointer-events-auto transition-all shadow-2xl flex flex-col gap-1 min-w-[80px]">
                 {[0.5, 0.75, 1, 1.25, 1.5, 2].map(s => (
-                  <button 
+                  <button
                     key={s}
                     onClick={() => {
                       setPlaybackSpeed(s);
