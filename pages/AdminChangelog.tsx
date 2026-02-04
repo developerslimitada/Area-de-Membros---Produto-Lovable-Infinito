@@ -11,6 +11,7 @@ interface Version {
 
 // Histórico de versões baseado na auditoria contínua
 const versions: Version[] = [
+    { version: '1.0.19', name: 'Smart Lesson Preview', keywords: ['YouTube', 'Fix', 'Admin'], type: 'fix' },
     { version: '1.0.18', name: 'Formulários Inteligentes', keywords: ['Select', 'Admin', 'UX'], type: 'feature' },
     { version: '1.0.17', name: 'Admin Persistence', keywords: ['Supabase', 'CRUD', 'Persistence'], type: 'feature' },
     { version: '1.0.16', name: 'Destaque Dinâmico', keywords: ['Oferta', 'Highlight', 'Admin'], type: 'feature' },

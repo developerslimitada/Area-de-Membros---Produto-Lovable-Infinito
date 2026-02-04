@@ -178,14 +178,28 @@ const AdminLessons: React.FC = () => {
   };
 
   const handleSave = async () => {
-    if (!selectedModuleId || !formData.title) return;
+    if (!selectedModuleId || !formData.title) {
+      alert("Preencha o título e selecione um módulo.");
+      return;
+    }
 
     setIsUploading(true);
+
+    // Auto-extract YouTube ID if full URL is pasted
+    let finalVideoUrl = formData.videoUrl || '';
+    if (formData.videoType === 'youtube' && finalVideoUrl.includes('youtube.com') || finalVideoUrl.includes('youtu.be')) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = finalVideoUrl.match(regExp);
+      if (match && match[2].length === 11) {
+        finalVideoUrl = match[2];
+      }
+    }
+
     const lessonData = {
       module_id: selectedModuleId,
       title: formData.title,
       description: formData.description,
-      video_url: formData.videoUrl,
+      video_url: finalVideoUrl,
       video_type: formData.videoType,
       duration_seconds: formData.durationSeconds,
       order_number: formData.orderNumber,
