@@ -218,13 +218,22 @@ const AdminDashboard: React.FC = () => {
                     <h1 className="text-2xl md:text-3xl font-bold text-white">Dashboard</h1>
                     <p className="text-slate-400 text-xs mt-1">Atualizado agora</p>
                 </div>
-                <button
-                    onClick={loadBusinessMetrics}
-                    className="px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-xl hover:bg-cyan-500/30 transition-all flex items-center gap-2 text-sm"
-                >
-                    <Activity size={16} />
-                    Atualizar
-                </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => window.open('/obrigado', '_blank')}
+                        className="px-4 py-2 bg-indigo-500/20 text-indigo-400 rounded-xl hover:bg-indigo-500/30 transition-all flex items-center gap-2 text-sm border border-indigo-500/20 shadow-[0_0_15px_-5px_rgba(99,102,241,0.3)]"
+                    >
+                        <Eye size={16} />
+                        Página de Obrigado
+                    </button>
+                    <button
+                        onClick={loadBusinessMetrics}
+                        className="px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-xl hover:bg-cyan-500/30 transition-all flex items-center gap-2 text-sm border border-cyan-500/20"
+                    >
+                        <Activity size={16} />
+                        Atualizar
+                    </button>
+                </div>
             </div>
 
             {/* KPIs */}

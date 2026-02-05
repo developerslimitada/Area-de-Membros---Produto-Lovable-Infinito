@@ -21,6 +21,7 @@ const StudentCommunity: React.FC = () => {
       const filtered = (db.offers || []).filter(offer => {
         const start = new Date(offer.dataInicio);
         const end = new Date(offer.dataExpiracao);
+        end.setHours(23, 59, 59, 999); // Include the full expiration day
         return offer.status === 'active' && now >= start && now <= end;
       }).sort((a, b) => b.priority - a.priority);
       setActiveOffers(filtered);

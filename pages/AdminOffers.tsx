@@ -108,13 +108,14 @@ const AdminOffers: React.FC = () => {
         imageUrl: formData.imageUrl || 'https://picsum.photos/seed/offer/800/600',
         precoOriginal: Number(formData.precoOriginal) || 0,
         precoPromocional: Number(formData.precoPromocional) || 0,
-        dataInicio: new Date(formData.dataInicio || '').toISOString(),
-        dataExpiracao: new Date(formData.dataExpiracao || '').toISOString(),
+        dataInicio: new Date(`${formData.dataInicio}T12:00:00`).toISOString(),
+        dataExpiracao: new Date(`${formData.dataExpiracao}T12:00:00`).toISOString(),
         status: formData.status as any || 'active',
         priority: Number(formData.priority) || 1
       };
 
       await saveOffer(newOffer);
+      await loadData();
       setMessage({ type: 'success', text: `Oferta "${newOffer.title}" salva com sucesso!` });
       setIsModalOpen(false);
     } catch (err) {
@@ -218,8 +219,17 @@ const AdminOffers: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-8 py-6">
-                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${offer.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>
-                      {offer.status === 'active' ? 'Ativo' : 'Inativo'}
+                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${(() => {
+                      const isExpired = new Date(offer.dataExpiracao) < new Date(new Date().setHours(0, 0, 0, 0));
+                      if (offer.status === 'active' && isExpired) return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
+                      return offer.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20';
+                    })()
+                      }`}>
+                      {(() => {
+                        const isExpired = new Date(offer.dataExpiracao) < new Date(new Date().setHours(0, 0, 0, 0));
+                        if (offer.status === 'active' && isExpired) return 'Expirado';
+                        return offer.status === 'active' ? 'Ativo' : 'Inativo';
+                      })()}
                     </span>
                   </td>
                   <td className="px-8 py-6 text-right">

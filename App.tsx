@@ -28,6 +28,7 @@ const AdminSupport = lazy(() => import('./pages/AdminSupport'));
 const AdminVSL = lazy(() => import('./pages/AdminVSL'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const AdminChangelog = lazy(() => import('./pages/AdminChangelog'));
+const ThankYou = lazy(() => import('./pages/ThankYou'));
 
 // Layouts (mantém imports diretos)
 import AdminLayout from './components/layouts/AdminLayout';
@@ -100,6 +101,7 @@ function AppContent() {
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/login" element={<Login onLogin={() => setUser(getLoggedUser())} />} />
+              <Route path="/obrigado" element={<ThankYou />} />
 
               {/* Compatibility redirects */}
               <Route path="/dashboard" element={<Navigate to="/student/courses" replace />} />
