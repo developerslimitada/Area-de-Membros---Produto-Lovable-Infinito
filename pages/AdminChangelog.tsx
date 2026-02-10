@@ -11,6 +11,7 @@ interface Version {
 
 // Histórico de versões baseado na auditoria contínua
 const versions: Version[] = [
+    { version: '1.0.23', name: 'Triagem de Suporte Inteligente', keywords: ['Bot', 'Fila de Espera', 'Horários'], type: 'feature' },
     { version: '1.0.22', name: 'Entregabilidade de Ofertas', keywords: ['Fuso Horário', 'Expiração', 'Admin'], type: 'fix' },
     { version: '1.0.21', name: 'Community Invite', keywords: ['CTA', 'UX', 'Mock'], type: 'fix' },
     { version: '1.0.20', name: 'Cinematic Player Fix', keywords: ['YouTube', 'Shorts', 'Automático'], type: 'fix' },
