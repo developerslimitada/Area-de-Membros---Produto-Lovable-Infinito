@@ -100,8 +100,8 @@ const AdminOffers: React.FC = () => {
       setSaving(true);
       setMessage(null);
 
-      const dInicio = new Date(`${formData.dataInicio}T12:00:00`);
-      const dExpiracao = new Date(`${formData.dataExpiracao}T12:00:00`);
+      const dInicio = new Date(`${formData.dataInicio}T00:00:00`);
+      const dExpiracao = new Date(`${formData.dataExpiracao}T23:59:59`);
 
       if (isNaN(dInicio.getTime()) || isNaN(dExpiracao.getTime())) {
         setMessage({ type: 'error', text: 'Data de início ou expiração inválida. Verifique o calendário.' });

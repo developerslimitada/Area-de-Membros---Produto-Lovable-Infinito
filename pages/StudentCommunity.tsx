@@ -14,7 +14,11 @@ const StudentCommunity: React.FC = () => {
         const now = new Date();
         const start = new Date(offer.dataInicio);
         const end = new Date(offer.dataExpiracao);
+
+        // Ensure start of the day comparison for visibility
+        start.setHours(0, 0, 0, 0);
         end.setHours(23, 59, 59, 999);
+
         return offer.status === 'active' && now >= start && now <= end;
       }).sort((a, b) => b.priority - a.priority);
     }
@@ -35,7 +39,11 @@ const StudentCommunity: React.FC = () => {
       const filtered = (db.offers || []).filter(offer => {
         const start = new Date(offer.dataInicio);
         const end = new Date(offer.dataExpiracao);
+
+        // Ensure start of the day comparison for visibility
+        start.setHours(0, 0, 0, 0);
         end.setHours(23, 59, 59, 999);
+
         return offer.status === 'active' && now >= start && now <= end;
       }).sort((a, b) => b.priority - a.priority);
       setActiveOffers(filtered);
