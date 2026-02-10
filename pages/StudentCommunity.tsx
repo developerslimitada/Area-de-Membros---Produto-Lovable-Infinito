@@ -6,7 +6,20 @@ import { getDB, initializeStore, subscribeToChanges } from '../supabaseStore';
 import { Offer } from '../types';
 
 const StudentCommunity: React.FC = () => {
-  const [activeOffers, setActiveOffers] = useState<Offer[]>([]);
+  const [activeOffers, setActiveOffers] = useState<Offer[]>(() => {
+    // Lead from cache immediately if available
+    const db = getDB();
+    if (db.offers && db.offers.length > 0) {
+      return (db.offers as Offer[]).filter(offer => {
+        const now = new Date();
+        const start = new Date(offer.dataInicio);
+        const end = new Date(offer.dataExpiracao);
+        end.setHours(23, 59, 59, 999);
+        return offer.status === 'active' && now >= start && now <= end;
+      }).sort((a, b) => b.priority - a.priority);
+    }
+    return [];
+  });
 
   useEffect(() => {
     loadData();
@@ -16,12 +29,13 @@ const StudentCommunity: React.FC = () => {
 
   const loadData = async () => {
     try {
-      const db = await initializeStore();
+      // Direct access to cached data if possible, or initialize
+      const db = getDB().offers.length > 0 ? getDB() : await initializeStore();
       const now = new Date();
       const filtered = (db.offers || []).filter(offer => {
         const start = new Date(offer.dataInicio);
         const end = new Date(offer.dataExpiracao);
-        end.setHours(23, 59, 59, 999); // Include the full expiration day
+        end.setHours(23, 59, 59, 999);
         return offer.status === 'active' && now >= start && now <= end;
       }).sort((a, b) => b.priority - a.priority);
       setActiveOffers(filtered);
