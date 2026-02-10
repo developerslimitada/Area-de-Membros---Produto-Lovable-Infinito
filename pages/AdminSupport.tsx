@@ -118,7 +118,12 @@ const AdminSupport: React.FC = () => {
                     unreadCount,
                     hasAdminReply
                 };
-            }).filter(c => c.messages.length > 0);
+            }).filter(c => {
+                // Only show conversations that were escalated to the queue
+                // or where the admin has already intervened
+                const isEscalated = c.messages.some(m => m.is_bot && m.content.includes('fila de espera'));
+                return isEscalated || c.hasAdminReply;
+            });
 
             // Ordenar por última mensagem
             convs.sort((a, b) => new Date(b.lastMessage?.created_at || 0).getTime() - new Date(a.lastMessage?.created_at || 0).getTime());

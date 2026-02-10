@@ -17,7 +17,7 @@ const FAQ_OPTIONS = [
     { id: 'acesso', label: 'Dificuldade de Acesso', response: 'Para problemas de acesso, verifique se seu e-mail e senha estão corretos. Caso tenha esquecido a senha, use a opção "Esqueci minha senha" na tela de login.' },
     { id: 'pagamento', label: 'Dúvidas sobre Pagamento', response: 'Nossos pagamentos são processados via Stripe/Hotmart. Você receberá um e-mail de confirmação assim que a transação for aprovada.' },
     { id: 'certificados', label: 'Meus Certificados', response: 'Os certificados ficam disponíveis automaticamente na aba "Certificados" assim que você concluir 100% das aulas de um curso.' },
-    { id: 'suporte_humano', label: 'Falar com Atendente', response: 'Entendi. Vou encaminhar sua solicitação para um de nossos especialistas. Por favor, descreva seu problema abaixo.', handoff: true },
+    { id: 'suporte_humano', label: 'Falar com Atendente', response: 'Entendi. Vou te encaminhar para um especialista. Mas antes, para agilizar seu atendimento, poderia me descrever com o máximo de detalhes o seu problema ou dúvida abaixo?', handoff: true },
 ];
 
 const SupportFloatingButton: React.FC = () => {
@@ -25,6 +25,7 @@ const SupportFloatingButton: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState('');
     const [isHandoffRequested, setIsHandoffRequested] = useState(false);
+    const [handoffStep, setHandoffStep] = useState(0); // 0: initial, 1: details requested, 2: in queue
     const [isBotTyping, setIsBotTyping] = useState(false);
     const [loading, setLoading] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -65,8 +66,17 @@ const SupportFloatingButton: React.FC = () => {
                     is_admin: msg.is_admin || false,
                     created_at: msg.created_at || new Date().toISOString()
                 })));
-                // If there are messages, user already interacted
-                setIsHandoffRequested(true);
+
+                // Check if handoff was already completed by looking for the queue message
+                const hasQueueMessage = data.some(m => m.is_bot && m.content.includes('fila de espera'));
+                const hasDetailsRequest = data.some(m => m.is_bot && m.content.includes('descrever com o máximo de detalhes'));
+
+                if (hasQueueMessage) {
+                    setIsHandoffRequested(true);
+                    setHandoffStep(2);
+                } else if (hasDetailsRequest) {
+                    setHandoffStep(1);
+                }
             }
         } catch (err) {
             console.error('Error loading messages:', err);
@@ -145,8 +155,28 @@ const SupportFloatingButton: React.FC = () => {
         // Save to Supabase
         await saveMessageToSupabase(text, false, false);
 
-        // If handoff requested, don't send bot response
-        if (isHandoffRequested) {
+        // If handoff already fully active (in queue), don't send bot response
+        if (isHandoffRequested && handoffStep === 2) {
+            return;
+        }
+
+        // Processing handoff step 1: User just sent details
+        if (handoffStep === 1) {
+            setIsBotTyping(true);
+            setTimeout(async () => {
+                setIsBotTyping(false);
+                const checkMsg = 'Entendido. Estou registrando os detalhes e verificando seu histórico no sistema...';
+                addMessage(checkMsg, true);
+                await saveMessageToSupabase(checkMsg, true, false);
+
+                setTimeout(async () => {
+                    const queueMsg = 'Você acaba de ser colocado na nossa fila de espera. Assim que tivermos um atendente disponível, você será atendido por um humano. Agradecemos muito pela sua aquisição do Método Infinito!';
+                    addMessage(queueMsg, true);
+                    await saveMessageToSupabase(queueMsg, true, false);
+                    setIsHandoffRequested(true);
+                    setHandoffStep(2);
+                }, 3000);
+            }, 1000);
             return;
         }
 
@@ -168,8 +198,8 @@ const SupportFloatingButton: React.FC = () => {
             } else if (lowerText.includes('curso') || lowerText.includes('aula') || lowerText.includes('vídeo')) {
                 botResponse = 'Para acessar seus cursos, vá até a aba "Cursos" no menu principal. Lá você encontrará todos os cursos disponíveis e seu progresso. Precisa de ajuda com algum curso específico?';
             } else if (lowerText.includes('atendente') || lowerText.includes('humano') || lowerText.includes('pessoa')) {
-                botResponse = 'Entendi. Vou encaminhar sua solicitação para um de nossos especialistas. Por favor, descreva seu problema em detalhes e aguarde o retorno.';
-                setIsHandoffRequested(true);
+                botResponse = 'Entendi. Vou te encaminhar para um especialista. Mas antes, para agilizar seu atendimento, poderia me descrever com o máximo de detalhes o seu problema ou dúvida abaixo?';
+                setHandoffStep(1);
             } else {
                 botResponse = 'Desculpe, não entendi completamente sua dúvida. Você gostaria de falar com um atendente humano? Ou pode escolher uma das opções do menu inicial.';
             }
@@ -191,7 +221,7 @@ const SupportFloatingButton: React.FC = () => {
             await saveMessageToSupabase(option.response, true, false);
 
             if (option.handoff) {
-                setIsHandoffRequested(true);
+                setHandoffStep(1);
             }
         }, 800);
     };
@@ -252,7 +282,7 @@ const SupportFloatingButton: React.FC = () => {
                             {messages.length === 0 && (
                                 <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
                                     <div className="bg-white/5 p-4 rounded-2xl border border-white/5 text-xs text-slate-300 leading-relaxed font-medium">
-                                        Olá, 2h! Eu sou o assistente virtual do Lovable Infinito. Como posso te ajudar hoje?
+                                        Olá! Eu sou o assistente virtual do Lovable Infinito. Nosso horário de atendimento humano é de segunda a sexta, das 09:00 às 17:00. Como posso te ajudar hoje?
                                     </div>
                                     <div className="grid grid-cols-1 gap-2">
                                         {FAQ_OPTIONS.map(opt => (
