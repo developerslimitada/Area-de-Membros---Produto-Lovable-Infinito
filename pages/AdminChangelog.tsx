@@ -11,6 +11,7 @@ interface Version {
 
 // Histórico de versões baseado na auditoria contínua
 const versions: Version[] = [
+    { version: '1.0.25', name: 'CRM Marketplace Fix', keywords: ['Date Validation', 'Feedback UI', 'Admin'], type: 'fix' },
     { version: '1.0.24', name: 'Aceleração de Marketplace', keywords: ['Performance', 'Cache', 'Instantâneo'], type: 'perf' },
     { version: '1.0.23', name: 'Triagem de Suporte Inteligente', keywords: ['Bot', 'Fila de Espera', 'Horários'], type: 'feature' },
     { version: '1.0.22', name: 'Entregabilidade de Ofertas', keywords: ['Fuso Horário', 'Expiração', 'Admin'], type: 'fix' },

@@ -100,6 +100,15 @@ const AdminOffers: React.FC = () => {
       setSaving(true);
       setMessage(null);
 
+      const dInicio = new Date(`${formData.dataInicio}T12:00:00`);
+      const dExpiracao = new Date(`${formData.dataExpiracao}T12:00:00`);
+
+      if (isNaN(dInicio.getTime()) || isNaN(dExpiracao.getTime())) {
+        setMessage({ type: 'error', text: 'Data de início ou expiração inválida. Verifique o calendário.' });
+        setSaving(false);
+        return;
+      }
+
       const newOffer: Partial<Offer> & { id?: string } = {
         id: editingOffer?.id,
         title: formData.title || '',
@@ -108,8 +117,8 @@ const AdminOffers: React.FC = () => {
         imageUrl: formData.imageUrl || 'https://picsum.photos/seed/offer/800/600',
         precoOriginal: Number(formData.precoOriginal) || 0,
         precoPromocional: Number(formData.precoPromocional) || 0,
-        dataInicio: new Date(`${formData.dataInicio}T12:00:00`).toISOString(),
-        dataExpiracao: new Date(`${formData.dataExpiracao}T12:00:00`).toISOString(),
+        dataInicio: dInicio.toISOString(),
+        dataExpiracao: dExpiracao.toISOString(),
         status: formData.status as any || 'active',
         priority: Number(formData.priority) || 1
       };
@@ -117,10 +126,10 @@ const AdminOffers: React.FC = () => {
       await saveOffer(newOffer);
       await loadData();
       setMessage({ type: 'success', text: `Oferta "${newOffer.title}" salva com sucesso!` });
-      setIsModalOpen(false);
+      setTimeout(() => setIsModalOpen(false), 1500);
     } catch (err) {
       console.error('Error saving offer:', err);
-      setMessage({ type: 'error', text: 'Erro ao salvar oferta.' });
+      setMessage({ type: 'error', text: 'Erro ao salvar oferta. Verifique os dados e tente novamente.' });
     } finally {
       setSaving(false);
     }
@@ -132,6 +141,7 @@ const AdminOffers: React.FC = () => {
         await deleteOffer(id);
         setOffers(prev => prev.filter(o => o.id !== id));
         setMessage({ type: 'success', text: 'Oferta excluída com sucesso.' });
+        setTimeout(() => setMessage(null), 3000);
       } catch (err) {
         console.error('Error deleting offer:', err);
         setMessage({ type: 'error', text: 'Erro ao excluir oferta.' });
@@ -147,6 +157,22 @@ const AdminOffers: React.FC = () => {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
+      {/* Alert Message */}
+      <AnimatePresence>
+        {message && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-12 left-1/2 -translate-x-1/2 z-[9999] px-6 py-4 rounded-2xl border shadow-2xl flex items-center gap-3 font-bold text-sm uppercase tracking-widest ${message.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'
+              }`}
+          >
+            {message.type === 'success' ? <CheckCircle size={20} /> : <HelpCircle size={20} />}
+            {message.text}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-black text-white tracking-tight uppercase">Crossel de comunidade</h1>
