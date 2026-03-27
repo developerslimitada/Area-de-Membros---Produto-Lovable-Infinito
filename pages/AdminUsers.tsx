@@ -184,7 +184,10 @@ const AdminUsers: React.FC = () => {
                 <th className="px-8 py-6">Credenciais</th>
                 <th className="px-8 py-6">Nível de Acesso</th>
                 <th className="px-8 py-6 text-center">Logins</th>
-                <th className="px-8 py-6 text-center">Downloads</th>
+                <th className="px-8 py-6 text-center">
+                  <span className="block">Downloads</span>
+                  <span className="block text-[8px] font-bold text-slate-600 uppercase tracking-widest mt-0.5 normal-case">Ferramentas</span>
+                </th>
                 <th className="px-8 py-6 text-right">Ações Rápidas</th>
               </tr>
             </thead>
