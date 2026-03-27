@@ -186,7 +186,7 @@ const AdminUsers: React.FC = () => {
                 <th className="px-8 py-6 text-center">Logins</th>
                 <th className="px-8 py-6 text-center">
                   <span className="block">Downloads</span>
-                  <span className="block text-[8px] font-bold text-slate-600 uppercase tracking-widest mt-0.5 normal-case">Ferramentas</span>
+                  <span className="block font-bold text-slate-600 uppercase tracking-[0.2em] mt-0.5">Ferramentas</span>
                 </th>
                 <th className="px-8 py-6 text-right">Ações Rápidas</th>
               </tr>
