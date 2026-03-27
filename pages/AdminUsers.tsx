@@ -148,7 +148,11 @@ const AdminUsers: React.FC = () => {
       // 3. Mais downloads de ferramentas
       const dlA = downloadCounts[a.id] || 0;
       const dlB = downloadCounts[b.id] || 0;
-      return dlB - dlA;
+      if (dlB !== dlA) return dlB - dlA;
+      // 4. Maior % de progresso nas aulas
+      const pctA = totalLessons > 0 ? (progressCounts[a.id] || 0) / totalLessons : 0;
+      const pctB = totalLessons > 0 ? (progressCounts[b.id] || 0) / totalLessons : 0;
+      return pctB - pctA;
     });
 
   const stats = {
