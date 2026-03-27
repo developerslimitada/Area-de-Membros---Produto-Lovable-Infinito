@@ -493,6 +493,21 @@ export async function deleteOffer(id: string) {
     if (error) throw error;
 }
 
+// Registra o download de um material de apoio
+export async function recordMaterialDownload(lessonId: string, materialUrl: string, materialName: string): Promise<void> {
+    const user = getLoggedUser();
+    if (!user) return;
+
+    await (supabase as any)
+        .from('material_downloads')
+        .insert({
+            user_id: user.id,
+            lesson_id: lessonId,
+            material_url: materialUrl,
+            material_name: materialName
+        });
+}
+
 // Registra que o aluno abriu/assistiu a aula sem alterar o status de conclusão
 export async function recordLessonAccess(lessonId: string): Promise<void> {
     const user = getLoggedUser();

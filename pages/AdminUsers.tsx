@@ -1,13 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Search, UserCircle, Shield, ShieldAlert, MoreVertical, Users as UsersIcon, UserCheck, UserMinus, X, Camera, Loader2, Pencil } from 'lucide-react';
-import { getDB, saveDB, getLoggedUser, updateProfile, uploadAvatar } from '../supabaseStore';
+import { Search, UserCircle, Shield, ShieldAlert, Users as UsersIcon, UserCheck, X, Camera, Loader2, Pencil, Download } from 'lucide-react';
+import { getLoggedUser, updateProfile, uploadAvatar } from '../supabaseStore';
 import { User, UserRole } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabase';
 
 const AdminUsers: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [downloadCounts, setDownloadCounts] = useState<Record<string, number>>({});
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean, user: User | null }>({ isOpen: false, user: null });
   const [editModal, setEditModal] = useState<{ isOpen: boolean, user: User | null }>({ isOpen: false, user: null });
@@ -18,10 +19,25 @@ const AdminUsers: React.FC = () => {
 
   useEffect(() => {
     fetchUsers();
+    fetchDownloadCounts();
   }, []);
 
+  const fetchDownloadCounts = async () => {
+    const { data } = await (supabase as any)
+      .from('material_downloads')
+      .select('user_id');
+
+    if (data) {
+      const counts: Record<string, number> = {};
+      data.forEach((row: { user_id: string }) => {
+        counts[row.user_id] = (counts[row.user_id] || 0) + 1;
+      });
+      setDownloadCounts(counts);
+    }
+  };
+
   const fetchUsers = async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('profiles')
       .select('*');
 
@@ -168,6 +184,7 @@ const AdminUsers: React.FC = () => {
                 <th className="px-8 py-6">Credenciais</th>
                 <th className="px-8 py-6">Nível de Acesso</th>
                 <th className="px-8 py-6 text-center">Logins</th>
+                <th className="px-8 py-6 text-center">Downloads</th>
                 <th className="px-8 py-6 text-right">Ações Rápidas</th>
               </tr>
             </thead>
@@ -224,6 +241,16 @@ const AdminUsers: React.FC = () => {
                   <td className="px-8 py-6 text-center">
                     <span className="text-xs font-black text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-lg border border-indigo-500/20">
                       {(user as any).login_count || 0}
+                    </span>
+                  </td>
+                  <td className="px-8 py-6 text-center">
+                    <span className={`text-xs font-black px-3 py-1 rounded-lg border flex items-center gap-1.5 w-fit mx-auto ${
+                      downloadCounts[user.id]
+                        ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                        : 'text-slate-600 bg-white/5 border-white/5'
+                    }`}>
+                      <Download size={11} />
+                      {downloadCounts[user.id] || 0}
                     </span>
                   </td>
                   <td className="px-8 py-6 text-right">

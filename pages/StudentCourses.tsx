@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { Play, Info, ChevronRight, ChevronLeft, Search, CheckCircle, Clock, X, Download, ShoppingCart, MoreVertical, Plus, Bookmark, Crown, Zap } from 'lucide-react';
-import { getDB, getLoggedUser, initializeStore, toggleLessonComplete as toggleComplete_async, recordLessonAccess, subscribeToChanges, DB } from '../supabaseStore';
+import { getDB, getLoggedUser, initializeStore, toggleLessonComplete as toggleComplete_async, recordLessonAccess, recordMaterialDownload, subscribeToChanges, DB } from '../supabaseStore';
 import { Course, Module, Lesson, Progress, Category } from '../types';
 import { supabase } from '../lib/supabase';
 import PandaPlayer from '../components/PandaPlayer';
@@ -1019,6 +1019,7 @@ const StudentCourses: React.FC = () => {
                             <a
                               href={currentLesson.supportMaterialUrl}
                               download
+                              onClick={() => recordMaterialDownload(currentLesson.id, currentLesson.supportMaterialUrl!, currentLesson.supportMaterialName || 'Arquivo Complementar').catch(() => {})}
                               className="flex items-center gap-4 md:gap-5 p-4 md:p-5 bg-white/5 rounded-xl md:rounded-2xl hover:bg-white/10 transition-all group/dl border border-white/5 active:scale-[0.98]"
                             >
                               <div className="w-10 h-10 bg-red-600/10 rounded-xl flex items-center justify-center text-red-600 group-hover/dl:bg-red-600 group-hover/dl:text-white transition-all">
