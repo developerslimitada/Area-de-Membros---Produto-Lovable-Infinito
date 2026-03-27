@@ -66,7 +66,7 @@ export async function signUp(email: string, password: string, name: string): Pro
 
     const isAdmin = email.toLowerCase() === 'developerslimitada@gmail.com';
 
-    // Create profile
+    // Create profile (sem device_type para evitar erro de schema)
     const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .insert({
@@ -75,13 +75,15 @@ export async function signUp(email: string, password: string, name: string): Pro
             name,
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
             role: isAdmin ? 'admin' : 'user',
-            login_count: 1,
-            device_type: detectDeviceType()
+            login_count: 1
         })
         .select()
         .single();
 
     if (profileError) throw profileError;
+
+    // Atualizar device_type separadamente (não bloqueia o cadastro se falhar)
+    supabase.from('profiles').update({ device_type: detectDeviceType() }).eq('id', data.user.id).then(() => {});
 
     const user: User = {
         id: (profile as any).id,
