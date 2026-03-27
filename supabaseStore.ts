@@ -117,17 +117,12 @@ export async function signIn(email: string, password: string): Promise<User> {
 
     if (profileError) throw profileError;
 
-    // Increment login count e atualizar device_type a cada login
+    // Increment login count (crítico — separado do device_type)
     const currentCount = (profile as any).login_count || 0;
-    const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
-            login_count: currentCount + 1,
-            device_type: detectDeviceType()
-        })
-        .eq('id', data.user.id);
+    await supabase.from('profiles').update({ login_count: currentCount + 1 }).eq('id', data.user.id);
 
-    if (updateError) console.error('Failed to increment login count:', updateError);
+    // Atualizar device_type (não-crítico, não bloqueia o login)
+    supabase.from('profiles').update({ device_type: detectDeviceType() }).eq('id', data.user.id).then(() => {});
 
     const user: User = {
         id: (profile as any).id,
