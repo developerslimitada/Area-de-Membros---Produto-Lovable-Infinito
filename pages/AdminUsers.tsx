@@ -42,19 +42,7 @@ const AdminUsers: React.FC = () => {
       .select('*');
 
     if (data) {
-      const sorted = (data as User[]).sort((a, b) => {
-        // Priority 1: Specific Admin Email
-        if (a.email === 'developerslimitada@gmail.com') return -1;
-        if (b.email === 'developerslimitada@gmail.com') return 1;
-
-        // Priority 2: Admin Role
-        if (a.role === 'admin' && b.role !== 'admin') return -1;
-        if (a.role !== 'admin' && b.role === 'admin') return 1;
-
-        // Priority 3: Name
-        return a.name.localeCompare(b.name);
-      });
-      setUsers(sorted);
+      setUsers(data as User[]);
     }
   };
 
@@ -126,10 +114,24 @@ const AdminUsers: React.FC = () => {
     }
   };
 
-  const filteredUsers = users.filter(u =>
-    u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredUsers = users
+    .filter(u =>
+      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => {
+      // 1. Developers Limitada sempre fixado no topo
+      if (a.email === 'developerslimitada@gmail.com') return -1;
+      if (b.email === 'developerslimitada@gmail.com') return 1;
+      // 2. Mais logins
+      const loginsA = (a as any).login_count || 0;
+      const loginsB = (b as any).login_count || 0;
+      if (loginsB !== loginsA) return loginsB - loginsA;
+      // 3. Mais downloads de ferramentas
+      const dlA = downloadCounts[a.id] || 0;
+      const dlB = downloadCounts[b.id] || 0;
+      return dlB - dlA;
+    });
 
   const stats = {
     total: users.length,
