@@ -24,6 +24,14 @@ import {
 
 const USER_SESSION_KEY = 'lovable_user';
 
+// Detecta o tipo de dispositivo real pelo User Agent
+function detectDeviceType(): string {
+    const ua = navigator.userAgent;
+    if (/iPhone|iPad|iPod/i.test(ua)) return 'iphone';
+    if (/Android/i.test(ua)) return 'android';
+    return 'desktop';
+}
+
 // ============ DB INTERFACE ============
 
 export interface DB {
@@ -67,7 +75,8 @@ export async function signUp(email: string, password: string, name: string): Pro
             name,
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
             role: isAdmin ? 'admin' : 'user',
-            login_count: 1
+            login_count: 1,
+            device_type: detectDeviceType()
         })
         .select()
         .single();
@@ -106,11 +115,14 @@ export async function signIn(email: string, password: string): Promise<User> {
 
     if (profileError) throw profileError;
 
-    // Increment login count
+    // Increment login count e atualizar device_type a cada login
     const currentCount = (profile as any).login_count || 0;
     const { error: updateError } = await supabase
         .from('profiles')
-        .update({ login_count: currentCount + 1 })
+        .update({
+            login_count: currentCount + 1,
+            device_type: detectDeviceType()
+        })
         .eq('id', data.user.id);
 
     if (updateError) console.error('Failed to increment login count:', updateError);

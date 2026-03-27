@@ -10,6 +10,7 @@ interface BusinessMetrics {
     activeUsersToday: number;
     androidUsers: number;
     iphoneUsers: number;
+    desktopUsers: number;
     totalCourses: number;
     totalModules: number;
     totalLessons: number;
@@ -41,6 +42,7 @@ const AdminDashboard: React.FC = () => {
         activeUsersToday: 0,
         androidUsers: 0,
         iphoneUsers: 0,
+        desktopUsers: 0,
         totalCourses: 0,
         totalModules: 0,
         totalLessons: 0,
@@ -86,6 +88,7 @@ const AdminDashboard: React.FC = () => {
                 activeUsersTodayResult,
                 androidUsersResult,
                 iphoneUsersResult,
+                desktopUsersResult,
                 coursesResult,
                 modulesResult,
                 lessonsResult,
@@ -109,6 +112,7 @@ const AdminDashboard: React.FC = () => {
                 supabase.from('user_progress').select('user_id', { count: 'exact', head: true }).gte('last_watched_at', today.toISOString()),
                 supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('device_type', 'android'),
                 supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('device_type', 'iphone'),
+                supabase.from('profiles').select('*', { count: 'exact', head: true }).eq('device_type', 'desktop'),
                 // Conteúdo
                 supabase.from('courses').select('*', { count: 'exact', head: true }),
                 supabase.from('modules').select('*', { count: 'exact', head: true }),
@@ -138,6 +142,7 @@ const AdminDashboard: React.FC = () => {
             const activeUsersToday = activeUsersTodayResult.count || 0;
             const androidUsers = androidUsersResult.count || 0;
             const iphoneUsers = iphoneUsersResult.count || 0;
+            const desktopUsers = desktopUsersResult.count || 0;
             const totalCourses = coursesResult.count || 0;
             const totalModules = modulesResult.count || 0;
             const totalLessons = lessonsResult.count || 0;
@@ -168,6 +173,7 @@ const AdminDashboard: React.FC = () => {
                 activeUsersToday,
                 androidUsers,
                 iphoneUsers,
+                desktopUsers,
                 totalCourses,
                 totalModules,
                 totalLessons,
@@ -405,32 +411,51 @@ const AdminDashboard: React.FC = () => {
                 {/* Dispositivos */}
                 <div className="bg-[#12121a] rounded-xl p-4 border border-white/5">
                     <h3 className="text-white font-bold text-sm mb-3">Dispositivos</h3>
-                    <div className="flex items-center gap-4">
-                        <div className="relative w-20 h-20">
-                            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                <circle cx="50" cy="50" r="40" fill="none" stroke="#1e1e2e" strokeWidth="14" />
-                                <circle cx="50" cy="50" r="40" fill="none" stroke="#22d3ee" strokeWidth="14"
-                                    strokeDasharray="251.2" strokeDashoffset={metrics.totalUsers ? 251.2 - (251.2 * metrics.androidUsers / metrics.totalUsers) : 251.2} />
-                            </svg>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                <span className="text-lg font-bold text-white">{metrics.totalUsers}</span>
+                    {(() => {
+                        const total = metrics.totalUsers || 1;
+                        const pct = (n: number) => Math.round(n / total * 100);
+                        const circAndroid = 251.2 * metrics.androidUsers / total;
+                        const circIphone = 251.2 * metrics.iphoneUsers / total;
+                        const devices = [
+                            { label: 'Android', count: metrics.androidUsers, color: '#22d3ee', dot: 'bg-cyan-400' },
+                            { label: 'iPhone', count: metrics.iphoneUsers, color: '#a855f7', dot: 'bg-purple-400' },
+                            { label: 'Desktop', count: metrics.desktopUsers, color: '#4ade80', dot: 'bg-emerald-400' },
+                            { label: 'Sem registro', count: metrics.totalUsers - metrics.androidUsers - metrics.iphoneUsers - metrics.desktopUsers, color: '#475569', dot: 'bg-slate-500' },
+                        ].filter(d => d.count > 0);
+                        return (
+                            <div className="flex items-center gap-4">
+                                <div className="relative w-20 h-20 shrink-0">
+                                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#1e1e2e" strokeWidth="14" />
+                                        {/* Android arc */}
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#22d3ee" strokeWidth="14"
+                                            strokeDasharray={`${circAndroid} ${251.2 - circAndroid}`}
+                                            strokeDashoffset="0" />
+                                        {/* iPhone arc */}
+                                        <circle cx="50" cy="50" r="40" fill="none" stroke="#a855f7" strokeWidth="14"
+                                            strokeDasharray={`${circIphone} ${251.2 - circIphone}`}
+                                            strokeDashoffset={-circAndroid} />
+                                    </svg>
+                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                        <span className="text-lg font-bold text-white">{metrics.totalUsers}</span>
+                                    </div>
+                                </div>
+                                <div className="flex-1 space-y-1.5 text-xs">
+                                    {devices.map(d => (
+                                        <div key={d.label} className="flex items-center justify-between">
+                                            <span className="flex items-center gap-1.5 text-slate-300">
+                                                <span className={`w-2 h-2 rounded-full ${d.dot}`}></span>
+                                                {d.label}
+                                            </span>
+                                            <span className="text-white font-bold">
+                                                {d.count} <span className="text-slate-500 font-normal">({pct(d.count)}%)</span>
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex-1 space-y-2 text-sm">
-                            <div className="flex items-center justify-between">
-                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-cyan-400"></span> Android</span>
-                                <span className="text-white font-bold">{metrics.androidUsers}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-purple-400"></span> iPhone</span>
-                                <span className="text-white font-bold">{metrics.iphoneUsers}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-500"></span> Outro</span>
-                                <span className="text-white font-bold">{metrics.totalUsers - metrics.androidUsers - metrics.iphoneUsers}</span>
-                            </div>
-                        </div>
-                    </div>
+                        );
+                    })()}
                 </div>
             </div>
 
