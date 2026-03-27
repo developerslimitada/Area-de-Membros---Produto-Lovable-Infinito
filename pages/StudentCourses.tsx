@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { Play, Info, ChevronRight, ChevronLeft, Search, CheckCircle, Clock, X, Download, ShoppingCart, MoreVertical, Plus, Bookmark, Crown, Zap } from 'lucide-react';
-import { getDB, getLoggedUser, initializeStore, toggleLessonComplete as toggleComplete_async, subscribeToChanges, DB } from '../supabaseStore';
+import { getDB, getLoggedUser, initializeStore, toggleLessonComplete as toggleComplete_async, recordLessonAccess, subscribeToChanges, DB } from '../supabaseStore';
 import { Course, Module, Lesson, Progress, Category } from '../types';
 import { supabase } from '../lib/supabase';
 import PandaPlayer from '../components/PandaPlayer';
@@ -329,6 +329,12 @@ const StudentCourses: React.FC = () => {
     }
   };
 
+  // Abre a aula e registra o acesso automaticamente no banco
+  const openLesson = (lesson: Lesson) => {
+    setCurrentLesson(lesson);
+    recordLessonAccess(lesson.id).catch(e => console.error('recordLessonAccess:', e));
+  };
+
   const handleOpenCourse = (course: Course) => {
     triggerHaptic('light');
     setSelectedCourse(course);
@@ -347,7 +353,7 @@ const StudentCourses: React.FC = () => {
       const courseModules = db.modules.filter(m => m.courseId === course.id).sort((a, b) => a.orderNumber - b.orderNumber);
       if (courseModules.length > 0) {
         const firstLesson = db.lessons.find(l => l.moduleId === courseModules[0].id);
-        if (firstLesson) setCurrentLesson(firstLesson);
+        if (firstLesson) openLesson(firstLesson);
       }
     } else {
       // Single tap
@@ -778,7 +784,7 @@ const StudentCourses: React.FC = () => {
                                     {db.lessons.filter(l => l.moduleId === module.id).sort((a, b) => a.orderNumber - b.orderNumber).map(lesson => (
                                       <button
                                         key={lesson.id}
-                                        onClick={() => { triggerHaptic('light'); setCurrentLesson(lesson); }}
+                                        onClick={() => { triggerHaptic('light'); openLesson(lesson); }}
                                         className="w-full group/lesson flex items-center justify-between p-4 md:p-5 rounded-xl md:rounded-2xl hover:bg-white/5 transition-all text-left active:scale-[0.98]"
                                         aria-label={`Assistir aula: ${lesson.title}`}
                                       >

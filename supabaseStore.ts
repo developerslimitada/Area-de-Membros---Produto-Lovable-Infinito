@@ -493,6 +493,39 @@ export async function deleteOffer(id: string) {
     if (error) throw error;
 }
 
+// Registra que o aluno abriu/assistiu a aula sem alterar o status de conclusão
+export async function recordLessonAccess(lessonId: string): Promise<void> {
+    const user = getLoggedUser();
+    if (!user) return;
+
+    // Verificar se já existe registro para esta aula
+    const { data: existing } = await supabase
+        .from('user_progress')
+        .select('id, completed')
+        .eq('user_id', user.id)
+        .eq('lesson_id', lessonId)
+        .maybeSingle();
+
+    if (existing) {
+        // Já existe: apenas atualizar last_watched_at (sem tocar em completed)
+        await supabase
+            .from('user_progress')
+            .update({ last_watched_at: new Date().toISOString() })
+            .eq('id', existing.id);
+    } else {
+        // Primeira vez: criar registro como "em progresso"
+        await supabase
+            .from('user_progress')
+            .insert({
+                user_id: user.id,
+                lesson_id: lessonId,
+                completed: false,
+                watched_seconds: 0,
+                last_watched_at: new Date().toISOString()
+            });
+    }
+}
+
 // User Progress
 export async function updateProgress(lessonId: string, completed: boolean, watchedSeconds?: number) {
     const user = getLoggedUser();
