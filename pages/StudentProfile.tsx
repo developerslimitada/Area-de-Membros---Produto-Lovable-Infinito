@@ -30,7 +30,12 @@ const StudentProfile: React.FC = () => {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Device Selector State
-  const [deviceType, setDeviceType] = useState<'android' | 'iphone' | null>(null);
+  const [deviceType, setDeviceType] = useState<'android' | 'iphone' | null>(() => {
+    // Inicializa direto do localStorage — sem esperar DB, sem re-render
+    if (!user) return null;
+    const cached = localStorage.getItem(`lovable_device_pref_${user.id}`);
+    return (cached === 'android' || cached === 'iphone') ? cached : null;
+  });
   const [showDevicePopup, setShowDevicePopup] = useState(false);
   const [savingDevice, setSavingDevice] = useState(false);
 
@@ -63,6 +68,15 @@ const StudentProfile: React.FC = () => {
 
   const loadDeviceType = async () => {
     if (!user) return;
+
+    // 1. Verifica localStorage primeiro — rápido e nunca falha
+    const cached = localStorage.getItem(`lovable_device_pref_${user.id}`);
+    if (cached === 'android' || cached === 'iphone') {
+      setDeviceType(cached);
+      return; // Já escolheu antes — não mostra popup
+    }
+
+    // 2. Fallback: verifica no banco se o aluno já tinha salvo antes
     try {
       const { data } = await supabase
         .from('profiles')
@@ -70,32 +84,40 @@ const StudentProfile: React.FC = () => {
         .eq('id', user.id)
         .single();
 
-      if (data?.device_type) {
-        setDeviceType(data.device_type);
+      const dbDevice = data?.device_type;
+      if (dbDevice === 'android' || dbDevice === 'iphone') {
+        // Salva no localStorage para próximas visitas não consultarem DB
+        localStorage.setItem(`lovable_device_pref_${user.id}`, dbDevice);
+        setDeviceType(dbDevice);
       } else {
-        // First access - show popup
+        // Nunca escolheu (null, 'desktop', etc.) — mostrar popup uma única vez
         setShowDevicePopup(true);
       }
     } catch (err) {
       console.error('Error loading device type:', err);
+      setShowDevicePopup(true);
     }
   };
 
   const handleSelectDevice = async (device: 'android' | 'iphone') => {
     if (!user || savingDevice) return;
+
+    // Salva no localStorage IMEDIATAMENTE (síncrono, nunca falha)
+    // Garante que nunca mais aparece o popup, independente do banco
+    localStorage.setItem(`lovable_device_pref_${user.id}`, device);
+    setDeviceType(device);
+    setShowDevicePopup(false);
+
+    // Salva no banco em background (para o dashboard de dispositivos)
     setSavingDevice(true);
     try {
       await supabase
         .from('profiles')
         .update({ device_type: device })
         .eq('id', user.id);
-
-      setDeviceType(device);
-      setShowDevicePopup(false);
     } catch (err) {
-      // Silencioso - não mostra erro pro aluno
-      console.error('Error saving device type:', err);
-      setShowDevicePopup(false);
+      console.error('Error saving device type to DB:', err);
+      // Não reverte — localStorage já garante a preferência salva
     } finally {
       setSavingDevice(false);
     }
