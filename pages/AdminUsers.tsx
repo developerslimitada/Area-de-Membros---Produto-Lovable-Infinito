@@ -9,6 +9,8 @@ import { supabase } from '../lib/supabase';
 const AdminUsers: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [downloadCounts, setDownloadCounts] = useState<Record<string, number>>({});
+  const [progressCounts, setProgressCounts] = useState<Record<string, number>>({});
+  const [totalLessons, setTotalLessons] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmModal, setConfirmModal] = useState<{ isOpen: boolean, user: User | null }>({ isOpen: false, user: null });
   const [editModal, setEditModal] = useState<{ isOpen: boolean, user: User | null }>({ isOpen: false, user: null });
@@ -20,7 +22,23 @@ const AdminUsers: React.FC = () => {
   useEffect(() => {
     fetchUsers();
     fetchDownloadCounts();
+    fetchProgressCounts();
   }, []);
+
+  const fetchProgressCounts = async () => {
+    const [progressRes, lessonsRes] = await Promise.all([
+      supabase.from('user_progress').select('user_id'),
+      supabase.from('lessons').select('id', { count: 'exact', head: true })
+    ]);
+    if (lessonsRes.count) setTotalLessons(lessonsRes.count);
+    if (progressRes.data) {
+      const counts: Record<string, number> = {};
+      progressRes.data.forEach((row: { user_id: string }) => {
+        counts[row.user_id] = (counts[row.user_id] || 0) + 1;
+      });
+      setProgressCounts(counts);
+    }
+  };
 
   const fetchDownloadCounts = async () => {
     const { data } = await (supabase as any)
@@ -190,6 +208,10 @@ const AdminUsers: React.FC = () => {
                   <span className="block">Downloads</span>
                   <span className="block font-bold text-slate-600 uppercase tracking-[0.2em] mt-0.5">Ferramentas</span>
                 </th>
+                <th className="px-8 py-6 text-center">
+                  <span className="block">Progresso</span>
+                  <span className="block font-bold text-slate-600 uppercase tracking-[0.2em] mt-0.5">Aulas</span>
+                </th>
                 <th className="px-8 py-6 text-right">Ações Rápidas</th>
               </tr>
             </thead>
@@ -257,6 +279,22 @@ const AdminUsers: React.FC = () => {
                       <Download size={11} />
                       {downloadCounts[user.id] || 0}
                     </span>
+                  </td>
+                  <td className="px-8 py-6">
+                    {(() => {
+                      const watched = progressCounts[user.id] || 0;
+                      const pct = totalLessons > 0 ? Math.min(100, Math.round((watched / totalLessons) * 100)) : 0;
+                      const color = pct >= 80 ? 'bg-emerald-500' : pct >= 40 ? 'bg-indigo-500' : pct > 0 ? 'bg-amber-500' : 'bg-slate-700';
+                      return (
+                        <div className="flex flex-col items-center gap-1 min-w-[80px]">
+                          <span className="text-[11px] font-black text-slate-300">{pct}%</span>
+                          <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${pct}%` }} />
+                          </div>
+                          <span className="text-[9px] text-slate-600 font-bold">{watched}/{totalLessons} aulas</span>
+                        </div>
+                      );
+                    })()}
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex items-center justify-end gap-2">
